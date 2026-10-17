@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find fuel Page</title>
+    <link rel="stylesheet" href="../dist/output.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+</head>
+
+<body>
+    <div class="flex min-h-screen bg-[#F8F9FA] text-gray-800 font-sans">
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between p-6 shrink-0">
+            <div>
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-yellow-300"></i>
+                    </div>
+
+                    <span class="text-xl font-bold">
+                        <span>Fuel</span><span class="text-green-700">less</span>
+                    </span>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-3">
+                        menu
+                    </p>
+
+                    <a href="#"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-house text-base"></i>
+                        <span>Overview</span>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-center space-x-3 px-4 py-3 bg-emerald-50 text-emerald-900 font-medium rounded-xl text-sm">
+                        <i class="fa-solid fa-gas-pump text-base"></i>
+                        <span>Find fuel</span>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-wallet text-base"></i>
+                        <span>Buy fuel</span>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-receipt text-base"></i>
+                        <span>My purchases</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-emerald-950 text-white p-5 rounded-2xl relative overflow-hidden">
+                    <div
+                        class="w-7 h-7 bg-emerald-800/60 text-lime-400 rounded-lg flex items-center justify-center text-xs mb-3">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h4 class="font-semibold text-sm mb-1">Need help?</h4>
+                    <p class="text-xs text-emerald-200/80 mb-4">
+                        Our support team is online.
+                    </p>
+                    <button
+                        class="w-full bg-lime-400 text-emerald-950 font-semibold py-2.5 rounded-xl text-xs hover:bg-lime-300 transition">
+                        Get support
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-9 h-9 bg-amber-200 text-amber-800 font-bold rounded-full flex items-center justify-center text-xs">
+                            AO
+                        </div>
+                        <div>
+                            <h5 class="text-xs font-semibold text-gray-900">
+                                Adegbesan Opeyemi
+                            </h5>
+                            <p class="text-[10px] text-gray-400">
+                                adegbesanopeyemi55@gmail.com
+                            </p>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto">
+            <header class="flex items-center justify-between mb-6">
+                <div>
+                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Welcome back, Opeyemi
+                    </p>
+                    <h1 class="text-3xl font-semibold text-gray-900">Find fuel near you</h1>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button
+                        class="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50">
+                        <i class="fa-regular fa-bell text-sm"></i>
+                    </button>
+                    <button
+                        class="bg-emerald-900 text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center space-x-2 hover:bg-emerald-800 transition">
+                        <span>Buy fuel</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3 mb-6">
+                <div class="flex-1 flex items-center space-x-3 px-3">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+                    <input type="text" placeholder="Search by area or station name"
+                        class="w-full text-sm text-gray-700 placeholder-gray-400 focus:outline-none bg-transparent">
+                </div>
+                <button
+                    class="bg-emerald-50 text-emerald-800 text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center space-x-2 hover:bg-emerald-100 transition shrink-0">
+                    <i class="fa-solid fa-location-crosshairs text-xs"></i>
+                    <span>Use my location</span>
+                </button>
+            </div>
+
+            <div class="flex items-center space-x-2 mb-8">
+                <button class="bg-emerald-900 text-white text-xs font-medium px-4 py-2 rounded-full">
+                    All stations
+                </button>
+                <button
+                    class="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-medium px-4 py-2 rounded-full">
+                    Lowest price
+                </button>
+                <button
+                    class="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-medium px-4 py-2 rounded-full">
+                    Shortest queue
+                </button>
+                <button
+                    class="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-medium px-4 py-2 rounded-full">
+                    Nearest
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Stations around Lekki</h2>
+                    <p class="text-xs text-gray-400">Showing 4 verified stations</p>
+                </div>
+                <div class="flex items-center space-x-1.5 text-xs text-gray-500 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span class="text-[11px] text-gray-400">Live availability</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white">
+                                <i class="fa-solid fa-gas-pump text-base"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 text-sm">Nipco Energy</h4>
+                        <p class="text-[11px] text-gray-400 mb-4">
+                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>11 Admiralty Way, Lekki
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
+                            <div>
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
+                                <p class="text-sm font-bold text-gray-900">₦875<span
+                                        class="text-[10px] text-gray-400 font-normal">/L</span></p>
+                            </div>
+                            <div class="border-l border-gray-200 pl-3">
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
+                                <p class="text-sm font-bold text-gray-900">1.2 km</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
+                            <span class="flex items-center text-emerald-600">
+                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5"></span> Low queue
+                            </span>
+                            <span class="flex items-center text-gray-400">
+                                <i class="fa-regular fa-clock mr-1"></i> ~ 4 min
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
+                        <span>Buy from this station</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-red-700 rounded-xl flex items-center justify-center text-white">
+                                <i class="fa-solid fa-gas-pump text-base"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 text-sm">MRS Oil Nigeria</h4>
+                        <p class="text-[11px] text-gray-400 mb-4">
+                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>28 Ozumba Mbadiwe, VI
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
+                            <div>
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
+                                <p class="text-sm font-bold text-gray-900">₦880<span
+                                        class="text-[10px] text-gray-400 font-normal">/L</span></p>
+                            </div>
+                            <div class="border-l border-gray-200 pl-3">
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
+                                <p class="text-sm font-bold text-gray-900">2.8 km</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
+                            <span class="flex items-center text-amber-600">
+                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5"></span> Moderate
+                            </span>
+                            <span class="flex items-center text-gray-400">
+                                <i class="fa-regular fa-clock mr-1"></i> ~ 12 min
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
+                        <span>Buy from this station</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center text-white">
+                                <i class="fa-solid fa-gas-pump text-base"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 text-sm">TotalEnergies</h4>
+                        <p class="text-[11px] text-gray-400 mb-4">
+                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>Chisco, Lekki-Epe Exp.
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
+                            <div>
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
+                                <p class="text-sm font-bold text-gray-900">₦875<span
+                                        class="text-[10px] text-gray-400 font-normal">/L</span></p>
+                            </div>
+                            <div class="border-l border-gray-200 pl-3">
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
+                                <p class="text-sm font-bold text-gray-900">4.1 km</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
+                            <span class="flex items-center text-emerald-600">
+                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5"></span> Low queue
+                            </span>
+                            <span class="flex items-center text-gray-400">
+                                <i class="fa-regular fa-clock mr-1"></i> ~ 6 min
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
+                        <span>Buy from this station</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-blue-800 rounded-xl flex items-center justify-center text-white">
+                                <i class="fa-solid fa-gas-pump text-base"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 text-sm">Northwest Petroleum</h4>
+                        <p class="text-[11px] text-gray-400 mb-4">
+                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>Chevron Drive, Lekki
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
+                            <div>
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
+                                <p class="text-sm font-bold text-gray-900">₦890<span
+                                        class="text-[10px] text-gray-400 font-normal">/L</span></p>
+                            </div>
+                            <div class="border-l border-gray-200 pl-3">
+                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
+                                <p class="text-sm font-bold text-gray-900">5.3 km</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
+                            <span class="flex items-center text-orange-600">
+                                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full mr-1.5"></span> Busy
+                            </span>
+                            <span class="flex items-center text-gray-400">
+                                <i class="fa-regular fa-clock mr-1"></i> ~ 24 min
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
+                        <span>Buy from this station</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div
+                class="relative h-44 w-full bg-emerald-100/50 rounded-2xl border border-emerald-200/60 overflow-hidden flex items-center justify-center bg-[radial-gradient(#a7f3d0_1px,transparent_1px)] [background-size:16px_16px]">
+                <div
+                    class="absolute left-1/3 top-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-900 text-lime-400 rounded-t-full rounded-br-full -rotate-45 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-gas-pump rotate-45 text-xs"></i>
+                </div>
+                <div
+                    class="absolute right-1/3 top-1/3 w-8 h-8 bg-emerald-900 text-lime-400 rounded-t-full rounded-br-full -rotate-45 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-gas-pump rotate-45 text-xs"></i>
+                </div>
+                <div
+                    class="absolute right-1/5 bottom-1/4 w-8 h-8 bg-emerald-900 text-lime-400 rounded-t-full rounded-br-full -rotate-45 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-gas-pump rotate-45 text-xs"></i>
+                </div>
+
+                <button
+                    class="relative z-10 bg-emerald-900 text-white text-xs font-semibold px-5 py-2.5 rounded-xl flex items-center space-x-2 shadow-lg hover:bg-emerald-800 transition">
+                    <span>Open map view</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>
