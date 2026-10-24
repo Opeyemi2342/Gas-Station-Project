@@ -7,163 +7,191 @@
     <title>Landing Page</title>
     <link rel="stylesheet" href="./dist/output.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+    <style>
+        @keyframes circularMotion {
+            0% {
+                transform: translate(0px, 0px);
+            }
+            25% {
+                transform: translate(10px, -10px);
+            }
+            50% {
+                transform: translate(0px, -18px);
+            }
+            75% {
+                transform: translate(-10px, -10px);
+            }
+            100% {
+                transform: translate(0px, 0px);
+            }
+        }
+        .animate-circular {
+            animation: circularMotion 6s infinite ease-in-out;
+        }
+    </style>
 </head>
 
-<body>
-    <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
-                <i class="fa-solid fa-bolt text-yellow-300"></i>
+<body class="font-sans text-gray-900 bg-white overflow-x-hidden">
+    <div>
+        <div class="px-8 lg:px-20 py-4 flex items-center justify-between border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
+                    <i class="fa-solid fa-bolt text-yellow-300"></i>
+                </div>
+
+                <span class="text-xl font-bold">
+                    <span>Fuel</span><span class="text-green-700">less</span>
+                </span>
             </div>
 
-            <span class="text-xl font-bold">
-                <span>Fuel</span><span class="text-green-700">less</span>
-            </span>
-        </div>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+                <a href="">Find Stations</a>
+                <a href="">How it Works</a>
+                <a href="">For Attendants</a>
+            </nav>
 
-        <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-            <a href="">Find Stations</a>
-            <a href="">How it Works</a>
-            <a href="">For Attandants</a>
-        </nav>
+            <div class="flex items-center gap-6">
+                <a href="" class="text-sm text-gray-700 font-medium hover:text-[#073621]">Sign in</a>
 
-        <div class="flex items-center gap-6">
-            <a href="" class="text-sm text-gray-700 font-medium hover:text-[#073621]">Sign in</a>
-
-            <a href="./findfuelpage.html"
-                class="bg-[#073621] hover:bg-[#09482d] text-white text-sm font-medium px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all">
-                <span>Buy fuel</span>
-                <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
-        </div>
-
-    </div>
-
-    <section class="grid grid-cols-1 lg:grid-cols-2 bg-[#FAF9F5]">
-        <div
-            class="flex flex-col lg:p-10 justify-center px-8 py-10 lg:px-16 lg:py-16 max-w-2xl mx-auto lg:mx-0 lg:pl-20 lg:pr-20">
-            <div>
-                <div class="inline-flex gap-2 text-xs font-semibold tracking-wider text-[#073621] mb-8">
-                    <span class="animate-ping w-2 h-2 rounded-full bg-[#22c55e]"></span>
-                    <span>Fuel, without the waiting</span>
-                </div>
-
-                <h1 class="text-5xl lg:text-7xl text-gray-900 leading-[1.1] tracking-tight mb-6 font-normal">
-                    Pay ahead.<br>Pull in.
-                    <span class=" text-green-700">Fuel up.</span>
-                </h1>
-
-                <p class="text-gray-600 text-lg leading-relaxed mb-10 max-w-lg">Buy fuel from trusted stations near you
-                    and receive a QR pass. No cash. No long queues. No stress.</p>
-
-
-                <div class="flex flex-wrap items-center gap-4 mb-4">
-                    <a href="./findfuelpage.html"
-                        class="bg-[#073621] hover:bg-[#09482d] text-white font-medium px-6 py-3.5 rounded-2xl flex items-center gap-2 transition-all shadow-sm">
-                        <span>Find fuel near me</span>
-                        <i class="fa-solid fa-arrow-right text-xs"></i>
-                    </a>
-
-                    <a href=""
-                        class="flex items-center gap-3 text-gray-900 font-medium px-4 py-3.5 hover:opacity-80 transition-opacity">
-                        <div
-                            class="w-10 h-10 rounded-full bg-gray-200/60 flex items-center justify-center text-xs border text-gray-800">
-                            <i class="fa-solid fa-play ml-0.5"></i>
-                        </div>
-                        <span>See the experience</span>
-                    </a>
-
-                </div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-6 text-xs text-gray-500 font-medium pt-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-regular fa-circle-check text-sm text-gray-700"></i>
-                    <span>Secure payments</span>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-gas-pump text-sm text-gray-700"></i>
-                    <span>Verified stations</span>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bolt text-sm text-gray-700"></i>
-                    <span>Instant QR pass</span>
-                </div>
+                <a href="./findfuelpage.html"
+                    class="bg-[#073621] hover:bg-[#09482d] text-white text-sm font-medium px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all">
+                    <span>Buy fuel</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
             </div>
         </div>
 
-        <div class="relative min-h-[420px] lg:min-h-full w-full bg-gray-900 overflow-hidden">
-            <img src="./src/Fueling Station.avif" alt="" class="absolute inset-0 w-full h-full object-cover opacity-85">
-
+        <section class="grid grid-cols-1 lg:grid-cols-2 bg-[#FAF9F5]">
             <div
-                class="absolute top-8 right-8 bg-white/95 backdrop-blur-sm px-5 py-3.5 rounded-2xl shadow-xl border border-white/20 flex items-center gap-3">
-                <div class="relative flex h-2.5 w-2.5 shrink-0">
-                    <span
-                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e]"></span>
-                </div>
-
-                <div class="flex flex-col text-left">
-                    <span class="text-[10px] font-bold tracking-wider text-gray-400 text-center leading-none mb-1">
-                        Lekki • Live
-                    </span>
-                    <span class=" font-extrabold text-gray-900 tracking-tight leading-none whitespace-nowrap">
-                        4 min wait
-                    </span>
-                </div>
-
-            </div>
-
-            <div
-                class="absolute bottom-8 left-8 lg:-left-8 bg-white/95 backdrop-blur-sm p-4 px-6 rounded-2xl shadow-xl border border-white/20 flex items-centergap-5 z-20 max-w-xs gap-3">
-                <div
-                    class="w-9 h-9 rounded-full bg-emerald-100 text-[#073621] flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-check text-sm"></i>
-                </div>
+                class="reveal-left opacity-0 -translate-x-12 transition-all duration-700 ease-out flex flex-col lg:p-10 justify-center px-8 py-10 lg:px-16 lg:py-16 max-w-2xl mx-auto lg:mx-0 lg:pl-20 lg:pr-20">
                 <div>
-                    <div class="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">Payment
-                        Confirmed</div>
-                    <div class="text-xl font-bold text-gray-900">&#8358;17,500</div>
-                    <div class="text-xs text-gray-500">20 liters . PMS</div>
+                    <div class="inline-flex gap-2 text-xs font-semibold tracking-wider text-[#073621] mb-8">
+                        <span class="animate-ping w-2 h-2 rounded-full bg-[#22c55e]"></span>
+                        <span>Fuel, without the waiting</span>
+                    </div>
+
+                    <h1 class="text-5xl lg:text-7xl text-gray-900 leading-[1.1] tracking-tight mb-6 font-normal">
+                        Pay ahead.<br> Pull in.
+                        <span class=" text-green-700">Fuel up.</span>
+                    </h1>
+
+                    <p class="text-gray-600 text-lg leading-relaxed mb-10 max-w-lg">Buy fuel from trusted stations near
+                        you
+                        and receive a QR pass. No cash. No long queues. No stress.</p>
+
+
+                    <div class="flex flex-wrap items-center gap-4 mb-4">
+                        <a href="./findfuelpage.html"
+                            class="bg-[#073621] hover:bg-[#09482d] text-white font-medium px-6 py-3.5 rounded-2xl flex items-center gap-2 transition-all shadow-sm">
+                            <span>Find fuel near me</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </a>
+
+                        <a href=""
+                            class="flex items-center gap-3 text-gray-900 font-medium px-4 py-3.5 hover:opacity-80 transition-opacity">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-200/60 flex items-center justify-center text-xs border text-gray-800">
+                                <i class="fa-solid fa-play ml-0.5"></i>
+                            </div>
+                            <span>See the experience</span>
+                        </a>
+
+                    </div>
                 </div>
+
+                <div class="flex flex-wrap items-center gap-6 text-xs text-gray-500 font-medium pt-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-regular fa-circle-check text-sm text-gray-700"></i>
+                        <span>Secure payments</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-gas-pump text-sm text-gray-700"></i>
+                        <span>Verified stations</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-sm text-gray-700"></i>
+                        <span>Instant QR pass</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="reveal-right opacity-0 translate-x-12 transition-all duration-700 ease-out relative min-h-[420px] lg:min-h-full w-full bg-gray-900 overflow-hidden">
+                <img src="./src/Fueling Station.avif" alt=""
+                    class="absolute inset-0 w-full h-full object-cover opacity-85">
+
                 <div
-                    class="mt-3 w-10 h-10 bg-gray-900 rounded p-1 flex items-center justify-center text-white shrink-0">
-                    <i class="fa-solid fa-qrcode text-xl"></i>
+                    class="absolute top-8 right-8 bg-white/95 backdrop-blur-sm px-5 py-3.5 rounded-2xl shadow-xl border border-white/20 flex items-center gap-3">
+                    <div class="relative flex h-2.5 w-2.5 shrink-0">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e]"></span>
+                    </div>
+
+                    <div class="flex flex-col text-left">
+                        <span class="text-[10px] font-bold tracking-wider text-gray-400 text-center leading-none mb-1">
+                            Lekki • Live
+                        </span>
+                        <span id="hero-wait-timer"
+                            class="font-extrabold text-gray-900 tracking-tight leading-none whitespace-nowrap transition-opacity duration-300">
+                            4 min wait
+                        </span>
+                    </div>
+
                 </div>
+
+                <div
+                    class="absolute bottom-8 left-8 lg:-left-8 bg-white/95 backdrop-blur-sm p-4 px-6 rounded-2xl shadow-xl border border-white/20 flex items-center gap-5 z-20 max-w-xs gap-3">
+                    <div
+                        class="w-9 h-9 rounded-full bg-emerald-100 text-[#073621] flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-check text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">Payment
+                            Confirmed</div>
+                        <div class="text-xl font-bold text-gray-900">&#8358;17,500</div>
+                        <div class="text-xs text-gray-500">20 liters . PMS</div>
+                    </div>
+                    <div
+                        class="mt-3 w-10 h-10 bg-gray-900 rounded p-1 flex items-center justify-center text-white shrink-0">
+                        <i class="fa-solid fa-qrcode text-xl"></i>
+                    </div>
+                </div>
+
             </div>
 
+        </section>
+
+        <!-- STATS BAR SECTION -->
+        <div
+            class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-green-900 text-white px-8 lg:px-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                <div class="grid grid-cols-3 md:text-center py-2">
+                    <div class="border-r border-green-700 p-2">
+                        <h1 class="text-xl font-bold">35+</h1>
+                        <p class="text-xs text-green-200">verified stations</p>
+                    </div>
+                    <div class="border-r border-green-700 p-2">
+                        <h1 class="text-xl font-bold">8 min</h1>
+                        <p class="text-xs text-green-200">average time saved</p>
+                    </div>
+                    <div class="p-2">
+                        <h1 class="text-xl font-bold">24/7</h1>
+                        <p class="text-xs text-green-200">secure purchasing</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center lg:justify-end py-6">
+                    <p class="text-sm italic text-green-100">"Built for how Nigeria moves."</p>
+                </div>
+            </div>
         </div>
 
-    </section>
-
-    <div class="bg-green-900 text-white">
-        <div class="grid grid-cols-1 lg:grid-cols-2 ">
-            <div class="grid grid-cols-3 md:text-center">
-                <div class="border-r border-green-700 p-2">
-                    <h1 class="text-xl font-bold">35+</h1>
-                    <p class="text-xs text-green-200">verified stations</p>
-                </div>
-                <div class="border-r border-green-700 p-2">
-                    <h1 class="text-xl font-bold">8 min</h1>
-                    <p class="text-xs text-green-200">average time saved</p>
-                </div>
-                <div class="p-2">
-                    <h1 class="text-xl font-bold">24/7</h1>
-                    <p class="text-xs text-green-200">secure purchasing</p>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-center lg:justify-end py-6 px-8 lg:px-16">
-                <p class="text-sm italic text-green-100">"Built for how Nigeria moves."</p>
-            </div>
-        </div>
-    </div>
-
-    <section class="bg-amber-50/30 py-16">
-        <div class="max-w-7xl mx-auto px-8 lg:px-16">
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-12">
+        <section class="bg-amber-50/30 py-16 px-8 lg:px-20">
+            <div
+                class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out flex flex-col lg:flex-row lg:items-end justify-between mb-12">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-green-800 mb-3">
                         THE EASY WAY TO FUEL
@@ -178,8 +206,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div
-                    class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between h-72">
+                <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-white rounded-2xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between h-72"
+                    style="transition-delay: 0ms;">
                     <div class="flex items-center justify-between">
                         <div
                             class="w-12 h-12 bg-emerald-100/60 rounded-xl flex items-center justify-center text-emerald-800">
@@ -195,7 +223,8 @@
                     </div>
                 </div>
 
-                <div class="bg-emerald-900 text-white rounded-2xl p-8 shadow-md flex flex-col justify-between h-72">
+                <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-emerald-900 text-white rounded-2xl p-8 shadow-md flex flex-col justify-between h-72"
+                    style="transition-delay: 150ms;">
                     <div class="flex items-center justify-between">
                         <div class="w-12 h-12 bg-lime-400 rounded-xl flex items-center justify-center text-emerald-950">
                             <i class="fa-solid fa-wallet text-xl"></i>
@@ -210,8 +239,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between h-72">
+                <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-white rounded-2xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between h-72"
+                    style="transition-delay: 300ms;">
                     <div class="flex items-center justify-between">
                         <div
                             class="w-12 h-12 bg-emerald-100/60 rounded-xl flex items-center justify-center text-emerald-800">
@@ -227,13 +256,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <div class="font-sans text-gray-900 bg-white">
-        <section class="bg-emerald-950 text-white py-16 px-8 lg:px-16">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
+        <section class="bg-emerald-950 text-white py-16 px-8 lg:px-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="reveal-left opacity-0 -translate-x-12 transition-all duration-700 ease-out">
                     <p class="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-3">
                         LIVE FUEL NETWORK
                     </p>
@@ -276,7 +303,8 @@
                     </a>
                 </div>
 
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+                <div
+                    class="reveal-right opacity-0 translate-x-12 transition-all duration-700 ease-out bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10 text-xs">
                         <div class="flex items-center space-x-2">
                             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -326,7 +354,8 @@
                                             class="text-[9px] font-normal text-emerald-200/60">/L</span></span>
                                     <span
                                         class="block text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">~
-                                        12 min</span>
+                                        12
+                                        min</span>
                                 </div>
                                 <i class="fa-solid fa-chevron-right text-[10px] text-emerald-300/60"></i>
                             </div>
@@ -364,83 +393,85 @@
             </div>
         </section>
 
-        <section class="py-20 px-8 lg:px-16">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-12">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-3">
-                            MADE FOR EVERY JOURNEY
-                        </p>
-                        <h2 class="text-4xl lg:text-5xl font-normal text-gray-900 tracking-tight">
-                            More control at every stop.
-                        </h2>
-                    </div>
-                    <p class="text-gray-500 max-w-xs mt-4 lg:mt-0 text-sm leading-relaxed">
-                        Everything you need to buy, track and redeem fuel with confidence.
+        <section class="py-20 px-8 lg:px-20">
+            <div
+                class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out flex flex-col lg:flex-row lg:items-end justify-between mb-12">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-3">
+                        MADE FOR EVERY JOURNEY
                     </p>
+                    <h2 class="text-4xl lg:text-5xl font-normal text-gray-900 tracking-tight">
+                        More control at every stop.
+                    </h2>
+                </div>
+                <p class="text-gray-500 max-w-xs mt-4 lg:mt-0 text-sm leading-relaxed">
+                    Everything you need to buy, track and redeem fuel with confidence.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-emerald-900 text-white rounded-2xl p-8 flex flex-col justify-between h-80 relative overflow-hidden"
+                    style="transition-delay: 0ms;">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-emerald-300/80">01</span>
+                        <div
+                            class="bg-white text-gray-900 p-4 rounded-xl shadow-lg w-36 text-center transform rotate-3">
+                            <p class="text-[8px] font-bold text-emerald-800 uppercase tracking-wider mb-2">ACTIVE FUEL
+                                PASS
+                            </p>
+                            <div
+                                class="w-16 h-16 bg-gray-900 rounded-lg mx-auto flex items-center justify-center text-white text-2xl mb-2">
+                                <i class="fa-solid fa-qrcode"></i>
+                            </div>
+                            <p class="text-xs font-bold">20.0 L</p>
+                            <p class="text-[8px] text-gray-400">NIPCO ENERGY • LEKKI</p>
+                        </div>
+                    </div>
+                    <div class="max-w-xs">
+                        <h3 class="text-lg font-semibold mb-2">Skip the cash. Keep the proof.</h3>
+                        <p class="text-xs text-emerald-100/80 leading-relaxed">
+                            Every purchase creates a permanent digital receipt, so you always know what you paid,
+                            where you bought it and who redeemed it.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div
-                        class="bg-emerald-900 text-white rounded-2xl p-8 flex flex-col justify-between h-80 relative overflow-hidden">
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-bold text-emerald-300/80">01</span>
-                            <div
-                                class="bg-white text-gray-900 p-4 rounded-xl shadow-lg w-36 text-center transform rotate-3">
-                                <p class="text-[8px] font-bold text-emerald-800 uppercase tracking-wider mb-2">ACTIVE
-                                    FUEL PASS</p>
-                                <div
-                                    class="w-16 h-16 bg-gray-900 rounded-lg mx-auto flex items-center justify-center text-white text-2xl mb-2">
-                                    <i class="fa-solid fa-qrcode"></i>
-                                </div>
-                                <p class="text-xs font-bold">20.0 L</p>
-                                <p class="text-[8px] text-gray-400">NIPCO ENERGY • LEKKI</p>
-                            </div>
+                <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-stone-100/80 rounded-2xl p-8 flex flex-col justify-between h-80"
+                    style="transition-delay: 150ms;">
+                    <div>
+                        <div
+                            class="w-10 h-10 bg-stone-200/60 rounded-xl flex items-center justify-center text-gray-700 text-sm mb-6">
+                            <i class="fa-solid fa-shield-halved"></i>
                         </div>
-                        <div class="max-w-xs">
-                            <h3 class="text-lg font-semibold mb-2">Skip the cash. Keep the proof.</h3>
-                            <p class="text-xs text-emerald-100/80 leading-relaxed">
-                                Every purchase creates a permanent digital receipt, so you always know what you paid,
-                                where you bought it and who redeemed it.
-                            </p>
-                        </div>
+                        <span class="text-xs font-bold text-gray-300 block mb-2">02</span>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Protected from fraud</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            One-time QR pass expires automatically and cannot be reused after dispensing.
+                        </p>
                     </div>
+                </div>
 
-                    <div class="bg-stone-100/80 rounded-2xl p-8 flex flex-col justify-between h-80">
-                        <div>
-                            <div
-                                class="w-10 h-10 bg-stone-200/60 rounded-xl flex items-center justify-center text-gray-700 text-sm mb-6">
-                                <i class="fa-solid fa-shield-halved"></i>
-                            </div>
-                            <span class="text-xs font-bold text-gray-300 block mb-2">02</span>
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Protected from fraud</h3>
-                            <p class="text-xs text-gray-500 leading-relaxed">
-                                One-time QR pass expires automatically and cannot be reused after dispensing.
-                            </p>
+                <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out bg-amber-100/60 rounded-2xl p-8 flex flex-col justify-between h-80"
+                    style="transition-delay: 300ms;">
+                    <div>
+                        <div
+                            class="w-10 h-10 bg-amber-200/60 rounded-xl flex items-center justify-center text-amber-800 text-sm mb-6">
+                            <i class="fa-regular fa-folder-closed"></i>
                         </div>
-                    </div>
-
-                    <div class="bg-amber-100/60 rounded-2xl p-8 flex flex-col justify-between h-80">
-                        <div>
-                            <div
-                                class="w-10 h-10 bg-amber-200/60 rounded-xl flex items-center justify-center text-amber-800 text-sm mb-6">
-                                <i class="fa-regular fa-folder-closed"></i>
-                            </div>
-                            <span class="text-xs font-bold text-amber-300 block mb-2">03</span>
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Flexible ways to pay</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed">
-                                Use your wallet, bank card or transfer. Payments are confirmed before you reach the
-                                pump.
-                            </p>
-                        </div>
+                        <span class="text-xs font-bold text-amber-300 block mb-2">03</span>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Flexible ways to pay</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            Use your wallet, bank card or transfer. Payments are confirmed before you reach the pump.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="py-16 px-8 lg:px-16 bg-gray-50/50">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div class="bg-amber-50/40 p-10 rounded-2xl border border-amber-100/50">
+        <section class="py-16 px-8 lg:px-20 bg-gray-50/50">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div
+                    class="reveal-left opacity-0 -translate-x-12 transition-all duration-700 ease-out bg-amber-50/40 p-10 rounded-2xl border border-amber-100/50">
                     <i class="fa-solid fa-quote-left text-emerald-800 text-3xl mb-6 block"></i>
                     <blockquote class="text-lg font-medium text-gray-900 leading-relaxed mb-8">
                         I used to spend close to an hour looking for fuel after work. Now I check the queue, pay on my
@@ -458,7 +489,7 @@
                     </div>
                 </div>
 
-                <div>
+                <div class="reveal-right opacity-0 translate-x-12 transition-all duration-700 ease-out">
                     <p class="text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-3">
                         SAFE BY DESIGN
                     </p>
@@ -507,34 +538,32 @@
             </div>
         </section>
 
-        <section class="py-16 px-8 lg:px-16">
-            <div
-                class="max-w-7xl mx-auto bg-lime-400 rounded-3xl p-12 lg:p-16 flex flex-col lg:flex-row items-center justify-between relative overflow-hidden">
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-wider text-emerald-950 mb-3">
-                        YOUR NEXT FILL-UP
-                    </p>
-                    <h2 class="text-5xl lg:text-6xl font-normal text-emerald-950 tracking-tight leading-none">
-                        Less waiting.<br>More moving.
-                    </h2>
-                </div>
-
-                <div class="mt-8 lg:mt-0 text-left lg:text-right max-w-xs">
-                    <p class="text-xs font-medium text-emerald-950/80 mb-6 leading-relaxed">
-                        Find fuel near you, lock in the price and arrive with payment already sorted.
-                    </p>
-                    <a href="#"
-                        class="inline-flex items-center space-x-2 bg-emerald-950 text-white text-xs font-semibold px-6 py-3.5 rounded-xl hover:bg-emerald-900 transition">
-                        <span>Find fuel now</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
+       <section class="py-16 px-8 lg:px-20">
+        <div
+            class="reveal animate-circular opacity-0 translate-y-8 transition-all duration-700 ease-out bg-lime-400 rounded-3xl p-12 lg:p-16 flex flex-col lg:flex-row items-center justify-between relative overflow-hidden">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-emerald-950 mb-3">
+                    YOUR NEXT FILL-UP
+                </p>
+                <h2 class="text-5xl lg:text-6xl font-normal text-emerald-950 tracking-tight leading-none">
+                    Less waiting.<br>More moving.
+                </h2>
             </div>
-        </section>
 
-        <footer class="bg-emerald-950 text-white pt-16 pb-8 px-8 lg:px-16">
-            <div
-                class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 pb-16 border-b border-white/10 text-xs">
+            <div class="mt-8 lg:mt-0 text-left lg:text-right max-w-xs">
+                <p class="text-xs font-medium text-emerald-950/80 mb-6 leading-relaxed">
+                    Find fuel near you, lock in the price and arrive with payment already sorted.
+                </p>
+                <a href="#"
+                    class="inline-flex items-center space-x-2 bg-emerald-950 text-white text-xs font-semibold px-6 py-3.5 rounded-xl hover:bg-emerald-900 transition">
+                    <span>Find fuel now</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+        <footer class="bg-emerald-950 text-white pt-16 pb-8 px-8 lg:px-20">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 pb-16 border-b border-white/10 text-xs">
                 <div class="md:col-span-1">
                     <div class="flex items-center space-x-2 text-white font-bold text-lg mb-4">
                         <div class="flex items-center gap-3">
@@ -582,8 +611,7 @@
                 </div>
             </div>
 
-            <div
-                class="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row items-center justify-between text-[10px] text-emerald-300/50">
+            <div class="pt-8 flex flex-col md:flex-row items-center justify-between text-[10px] text-emerald-300/50">
                 <p>&copy; 2025 Fuelless Technologies</p>
                 <p>Built in Lagos, Nigeria</p>
                 <div class="flex space-x-4 mt-2 md:mt-0">
@@ -592,10 +620,9 @@
                 </div>
             </div>
         </footer>
-
     </div>
 
-
+    <script src="./Javascript Folders/index.js"></script>
 </body>
 
 </html>
