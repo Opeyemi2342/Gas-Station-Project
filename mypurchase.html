@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Purchase Page</title>
     <link rel="stylesheet" href="./dist/output.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
-<body>
+<body class="bg-[#FAF9F5] font-sans text-gray-900 min-h-screen flex flex-col justify-between">
     <!-- Top Navigation Header -->
     <header class="px-8 py-6 flex items-center justify-between max-w-7xl mx-auto w-full">
         <!-- Logo -->
@@ -26,37 +27,35 @@
         </div>
 
         <!-- Top Right Link -->
-        <a href="./index.html"
-            class="text-xs font-semibold tracking-wider text-gray-700 hover:text-[#073621] flex items-center gap-1.5 transition-colors">
+        <a href="./index.html" class="text-sm font-semibold tracking-wider text-gray-700 hover:text-[#073621] flex items-center gap-2 transition-colors">
             <span>Go to dashboard</span>
-            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
         </a>
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-1 flex flex-col items-center justify-center px-4 py-8">
-
+    <main class="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-3xl mx-auto w-full">
+        
         <!-- Success Check Icon & Header -->
-        <div class="reveal text-center mb-8">
-            <div
-                class="w-12 h-12 rounded-full bg-[#145337] text-[#22c55e] flex items-center justify-center mx-auto mb-4 shadow-md">
-                <i class="fa-solid fa-check text-lg"></i>
+        <div class="reveal text-center mb-10">
+            <div class="w-14 h-14 rounded-full bg-[#145337] text-[#22c55e] flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i class="fa-solid fa-check text-xl"></i>
             </div>
-            <span class="text-[11px] font-bold tracking-widest text-[#073621] uppercase block mb-1">
+            <span class="text-xs font-bold tracking-widest text-[#073621] uppercase block mb-2">
                 Payment Successful
             </span>
-            <h1 class="text-3xl lg:text-4xl font-normal text-gray-900 tracking-tight mb-2">
+            <h1 class="text-4xl lg:text-5xl font-normal text-gray-900 tracking-tight mb-3">
                 Your fuel is ready.
             </h1>
-            <p class="text-xs text-gray-500 font-medium">
+            <p class="text-sm text-gray-500 font-medium">
                 Show this pass to the attendant when you arrive.
             </p>
         </div>
 
         <!-- Digital Fuel Pass Card -->
-        <div class="reveal bg-white w-full max-w-md rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-6"
-            style="transition-delay: 150ms;">
-
+<div id="fuel-pass-card" class="reveal bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-8" style="transition-delay: 150ms;">
+    <!-- Card contents here... -->
+            
             <!-- Card Header (Dark Green) -->
             <div class="bg-[#145337] text-white px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -74,22 +73,21 @@
             </div>
 
             <!-- Station Location Info -->
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-gas-pump text-sm"></i>
+            <div class="px-8 py-5 border-b border-gray-100 flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-gas-pump text-base"></i>
                 </div>
                 <div>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-gray-400 block">Redeem at</span>
-                    <h4 class="text-xs font-bold text-gray-900">Nipco Energy, Lekki</h4>
-                    <p class="text-[10px] text-gray-500">11 Admiralty Way • Pump 1–6</p>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Redeem at</span>
+                    <h4 class="text-sm font-bold text-gray-900">Nipco Energy, Lekki</h4>
+                    <p class="text-xs text-gray-500">11 Admiralty Way • Pump 1–6</p>
                 </div>
             </div>
 
-            <!-- QR Code Area -->
+            <!-- QR Code Area (Bold & Prominent) -->
             <div class="p-8 flex flex-col items-center justify-center bg-white">
                 <!-- Outer Square Box -->
-                <div
-                    class="w-48 h-48 bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center justify-center">
+                <div class="w-48 h-48 bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center justify-center">
                     <!-- Real CSS QR Code Matrix Simulation -->
                     <div class="w-40 h-40 grid grid-cols-6 grid-rows-6 gap-1 bg-white p-2">
                         <!-- Row 1 -->
@@ -137,62 +135,54 @@
             </div>
 
             <!-- Fuel Details Grid -->
-            <div class="grid grid-cols-3 border-t border-b border-gray-100 py-3 text-center bg-gray-50/50 text-xs">
+            <div class="grid grid-cols-3 border-t border-b border-gray-100 py-4 text-center bg-gray-50/50 text-sm">
                 <div class="border-r border-gray-200/60">
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Fuel
-                        Type</span>
-                    <span class="font-bold text-gray-900">PMS</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Fuel Type</span>
+                    <span class="font-bold text-gray-900 text-base">PMS</span>
                 </div>
                 <div class="border-r border-gray-200/60">
-                    <span
-                        class="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Quantity</span>
-                    <span class="font-bold text-gray-900">20.0 L</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Quantity</span>
+                    <span class="font-bold text-gray-900 text-base">20.0 L</span>
                 </div>
                 <div>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Amount
-                        Paid</span>
-                    <span class="font-bold text-gray-900">&#8358;17,600</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Amount Paid</span>
+                    <span class="font-bold text-gray-900 text-base">&#8358;17,600</span>
                 </div>
             </div>
 
-            <!-- Validity Footer inside Card -->
-            <div class="px-6 py-3.5 bg-gray-50 flex items-center justify-between text-[11px] text-gray-600">
-                <div class="flex items-center gap-2">
-                    <i class="fa-regular fa-clock text-gray-400"></i>
-                    <span>Valid until <strong class="text-gray-900 font-semibold">Tomorrow, 8:42 AM</strong></span>
+            <!-- Validity Footer inside Card (Added IDs for JS) -->
+            <div class="px-8 py-4 bg-gray-50 flex items-center justify-between text-xs text-gray-600">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-regular fa-clock text-gray-400 text-sm"></i>
+                    <span id="validity-date-container">Valid until <strong id="validity-date-text" class="text-gray-900 font-semibold">Tomorrow, 8:42 AM</strong></span>
                 </div>
-                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded-full">
+                <span id="countdown-timer" class="text-xs font-bold text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full">
                     23:48:12 left
                 </span>
             </div>
 
         </div>
 
-        <!-- Action Buttons -->
-        <div class="reveal flex flex-col sm:flex-row items-center gap-3 w-full max-w-md mb-8"
-            style="transition-delay: 300ms;">
-            <a href="#"
-                class="w-full sm:flex-1 bg-[#145337] hover:bg-[#09482d] text-white text-xs font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm">
-                <i class="fa-solid fa-qrcode text-sm"></i>
+        <!-- Action Buttons (Added IDs for JS) -->
+        <div class="reveal flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mb-8" style="transition-delay: 300ms;">
+            <a href="#" id="test-scan-btn" class="w-full sm:flex-1 bg-[#145337] hover:bg-[#09482d] text-white text-sm font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md">
+                <i class="fa-solid fa-qrcode text-base"></i>
                 <span>Test attendant scan</span>
             </a>
-            <a href="#"
-                class="w-full sm:flex-1 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 text-xs font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all">
-                <i class="fa-solid fa-download text-xs text-gray-500"></i>
+            <a href="#" id="download-receipt-btn" class="w-full sm:flex-1 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 text-sm font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-sm">
+                <i class="fa-solid fa-download text-sm text-gray-500"></i>
                 <span>Download receipt</span>
             </a>
         </div>
 
         <!-- Arrival Note Box -->
-        <div class="reveal bg-white/80 border border-gray-200/60 rounded-2xl p-4 max-w-md w-full flex items-start gap-5"
-            style="transition-delay: 450ms;">
-            <div
-                class="w-7 h-7 rounded-full bg-emerald-100 text-[#073621] flex items-center justify-center shrink-0 mt-0.5">
-                <i class="fa-solid fa-location-dot text-xs"></i>
+        <div class="reveal bg-white/90 border border-gray-200/60 rounded-2xl p-5 max-w-lg w-full flex items-start gap-4 shadow-sm" style="transition-delay: 450ms;">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 text-[#073621] flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-location-dot text-sm"></i>
             </div>
             <div>
                 <h5 class="text-xs font-bold text-gray-900 mb-1">When you arrive</h5>
-                <p class="text-[11px] text-gray-500 leading-relaxed">
+                <p class="text-xs text-gray-500 leading-relaxed">
                     Join the Fuelless express lane and show this QR pass. The attendant will scan it before dispensing.
                 </p>
             </div>
@@ -201,9 +191,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-6 text-center text-[10px] text-gray-400">
+    <footer class="py-8 text-center text-xs text-gray-400">
         &copy; 2025 Fuelless Technologies • Built in Lagos, Nigeria
     </footer>
+
+    <!-- Separate JavaScript File -->
+    <script src="./Javascript Folders/mypurchase.js"></script>
 </body>
 
 </html>

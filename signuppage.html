@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create your account - Fuelless</title>
+    <link rel="stylesheet" href="./dist/output.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+</head>
+
+<body class="bg-white font-sans text-gray-900 overflow-x-hidden">
+    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+        
+        <!-- LEFT BRANDING PANEL -->
+        <div class="hidden lg:flex bg-[#073621] text-white p-12 lg:p-16 flex-col justify-between relative overflow-hidden">
+            <!-- Layered Concentric Background Rings -->
+            <div class="absolute -right-32 -top-32 w-[550px] h-[550px] rounded-full border-[40px] border-emerald-900/40 pointer-events-none"></div>
+            <div class="absolute -right-16 -top-16 w-[400px] h-[400px] rounded-full border-[25px] border-emerald-800/30 pointer-events-none"></div>
+            <div class="absolute right-12 top-12 w-[250px] h-[250px] rounded-full border-[15px] border-emerald-700/20 pointer-events-none"></div>
+
+            <!-- Top Logo -->
+            <div class="flex items-center space-x-3 z-10">
+                <div class="w-9 h-9 bg-green-700 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-bolt text-yellow-300 text-sm"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">
+                    <span>fuel</span><span class="text-green-500">less</span>
+                </span>
+            </div>
+
+            <!-- Center Headline & Description -->
+            <div class="z-10 max-w-lg my-auto py-12">
+                <div class="inline-flex items-center space-x-2 text-xs font-bold text-emerald-400 uppercase tracking-widest mb-6">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>Fuel, already sorted</span>
+                </div>
+
+                <h1 class="text-4xl xl:text-6xl font-bold leading-[1.1] tracking-tight mb-6">
+                    Move through your day, not a fuel queue.
+                </h1>
+
+                <p class="text-emerald-100/90 text-sm leading-relaxed mb-8 max-w-md font-medium">
+                    Find available fuel, pay before you leave and arrive with a secure pass ready to scan.
+                </p>
+
+                <!-- Feature Pills -->
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div class="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
+                        <div class="flex items-center space-x-2 text-emerald-300 font-bold mb-1">
+                            <i class="fa-solid fa-shield-halved text-xs"></i>
+                            <span>Protected payments</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-200/70 leading-normal">Your money stays secure until redemption.</p>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
+                        <div class="flex items-center space-x-2 text-emerald-300 font-bold mb-1">
+                            <i class="fa-solid fa-bolt text-xs"></i>
+                            <span>Instant fuel passes</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-200/70 leading-normal">One-time QR code, ready in seconds.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Testimonial -->
+            <div class="z-10 pt-4 border-t border-emerald-900/60">
+                <blockquote class="text-xs italic text-emerald-200/90 mb-1">
+                    "I check the queue, pay on my phone and I'm out in minutes."
+                </blockquote>
+                <p class="text-[10px] text-emerald-400 font-semibold">Amara, Lagos</p>
+            </div>
+        </div>
+
+        <!-- RIGHT REGISTRATION PANEL -->
+        <div class="flex flex-col justify-between p-8 sm:p-12 lg:p-16 bg-white overflow-y-auto">
+            
+            <!-- Top Header Link -->
+            <div class="flex justify-end lg:justify-start">
+                <a href="./index.html" class="text-xs font-semibold text-gray-500 hover:text-gray-900 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                    <span>Back to home</span>
+                </a>
+            </div>
+
+            <!-- Form Container -->
+            <div class="max-w-md w-full mx-auto my-6">
+                
+                <div class="mb-6">
+                    <p class="text-[10px] font-bold uppercase tracking-wider mb-1 text-green-700">Join Fuelless</p>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Create your account</h2>
+                    <p class="text-xs text-gray-500 mt-1">Buy fuel ahead and spend less time waiting at the pump.</p>
+                </div>
+
+                <!-- Toggle Tabs (Sign in / Create account) -->
+                <div class="bg-gray-100 p-1 rounded-2xl flex items-center mb-6 text-xs font-semibold">
+                    <a href="./signinpage.html" class="flex-1 py-2.5 text-center text-gray-500 hover:text-gray-900 transition">
+                        Sign in
+                    </a>
+                    <a href="./signuppage.html" class="flex-1 py-2.5 text-center bg-white text-gray-900 rounded-xl shadow-sm transition">
+                        Create account
+                    </a>
+                </div>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="space-y-4">
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1.5">Full name</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="text" id="fullname-input" required placeholder="e.g. Amara Okafor"
+                                class="w-full bg-white border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-xs outline-none focus:border-emerald-700 transition shadow-sm placeholder:text-gray-400">
+                        </div>
+                    </div>
+
+                    <!-- Phone Number with Country Code -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1.5">Phone number</label>
+                        <div class="flex gap-2">
+                            <div class="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-3 text-xs text-gray-600 font-medium shrink-0 shadow-sm">
+                                <i class="fa-solid fa-phone text-gray-400 mr-2 text-[10px]"></i>
+                                <span>+234</span>
+                            </div>
+                            <div class="relative flex-1">
+                                <input type="tel" id="phone-input" required placeholder="801 234 5678"
+                                    class="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-emerald-700 transition shadow-sm placeholder:text-gray-400">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1.5">Email address</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="email" id="email-input" required placeholder="you@example.com"
+                                class="w-full bg-white border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-xs outline-none focus:border-emerald-700 transition shadow-sm placeholder:text-gray-400">
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1.5">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="password" id="password-input" required placeholder="At least 8 characters"
+                                class="w-full bg-white border border-gray-200 rounded-2xl pl-11 pr-16 py-3 text-xs outline-none focus:border-emerald-700 transition shadow-sm placeholder:text-gray-400">
+                            <button type="button" id="toggle-password" class="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-gray-500 hover:text-gray-800">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Terms & Conditions Checkbox -->
+                    <div class="flex items-start space-x-2 pt-1">
+                        <input type="checkbox" id="terms" required class="mt-0.5 w-4 h-4 text-emerald-800 rounded border-gray-300 focus:ring-emerald-700">
+                        <label for="terms" class="text-xs text-gray-600 leading-normal">
+                            I agree to the <a href="#" class="text-emerald-800 font-semibold hover:underline">Terms of Service</a> and <a href="#" class="text-emerald-800 font-semibold hover:underline">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit-btn"
+                        class="w-full bg-[#073621] hover:bg-[#09482d] text-white py-3.5 rounded-2xl text-xs font-semibold shadow-md transition flex items-center justify-center space-x-2 mt-2">
+                        <span>Create my account</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </form>
+
+                <!-- Bottom Switch Link -->
+                <p class="text-center text-xs text-gray-500 mt-6">
+                    Already have an account? <a href="./signinpage.html" class="font-semibold text-gray-900 hover:underline ml-1">Sign in</a>
+                </p>
+
+            </div>
+
+            <!-- Footer Security Note -->
+            <div class="pt-6 border-t border-gray-100 flex items-center justify-center space-x-2 text-[10px] text-gray-400">
+                <i class="fa-solid fa-shield-halved text-emerald-700"></i>
+                <span>Your details are encrypted and securely stored.</span>
+            </div>
+
+        </div>
+
+    </div>
+
+<script src="./Javascript Folders/signup.js"></script>
+</body>
+
+</html>
