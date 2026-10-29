@@ -7,6 +7,14 @@
     <title>Find fuel Page</title>
     <link rel="stylesheet" href="./dist/output.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+    
+    <style>
+        /* Eradicate card flickering/blinking on hover or click */
+        #stations-grid > div {
+            transform: none !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,16 +25,16 @@
             class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col justify-between p-6 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out shrink-0">
             <div>
                 <div class="flex items-center space-x-2 text-emerald-900 font-bold text-lg">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
-                                <i class="fa-solid fa-bolt text-yellow-300"></i>
-                            </div>
-
-                            <span class="text-xl font-bold">
-                                <span>Fuel</span><span class="text-green-700">less</span>
-                            </span>
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
+                            <i class="fa-solid fa-bolt text-yellow-300"></i>
                         </div>
+
+                        <span class="text-xl font-bold">
+                            <span>Fuel</span><span class="text-green-700">less</span>
+                        </span>
                     </div>
+                </div>
 
                 <div class="space-y-1">
                     <p class="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-3 mt-5">Menu</p>
@@ -118,12 +126,6 @@
                             class="lg:hidden w-10 h-10 bg-white border border-gray-200/80 rounded-xl flex items-center justify-center text-gray-700 shadow-sm hover:bg-gray-50 active:scale-95 transition">
                             <i class="fa-solid fa-bars text-base"></i>
                         </button>
-
-                        <button
-                            class="hidden sm:flex bg-emerald-900 text-white px-5 py-2.5 rounded-full text-xs font-semibold items-center space-x-2 hover:bg-emerald-800 shadow-sm transition">
-                            <span>Buy fuel</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </button>
                     </div>
                 </div>
 
@@ -136,10 +138,11 @@
             </header>
 
             <!-- SEARCH BAR SECTION -->
-            <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out flex flex-col md:flex-row gap-3 mb-6">
+            <div class="flex flex-col md:flex-row gap-3 mb-6">
                 <div class="flex-1 relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" placeholder="Search by area or station name"
+                    <!-- Real-time search input -->
+                    <input type="text" id="search-input" placeholder="Search by area or station name (e.g. Nipco, Lekki)"
                         class="w-full bg-white border border-gray-200/80 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-emerald-700 shadow-sm placeholder:text-gray-400">
                 </div>
 
@@ -152,186 +155,26 @@
             </div>
 
             <!-- FILTER CHIPS -->
-            <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out flex items-center space-x-2 overflow-x-auto pb-2 mb-8">
-                <button class="bg-emerald-900 text-white px-4 py-2 rounded-full text-xs font-medium shrink-0">All stations</button>
-                <button class="bg-white text-gray-600 border border-gray-200/60 px-4 py-2 rounded-full text-xs font-medium hover:bg-gray-50 shrink-0">Lowest price</button>
-                <button class="bg-white text-gray-600 border border-gray-200/60 px-4 py-2 rounded-full text-xs font-medium hover:bg-gray-50 shrink-0">Shortest queue</button>
-                <button class="bg-white text-gray-600 border border-gray-200/60 px-4 py-2 rounded-full text-xs font-medium hover:bg-gray-50 shrink-0">Nearest</button>
+            <div class="flex items-center space-x-2 overflow-x-auto pb-2 mb-8">
+                <button class="filter-chip bg-emerald-900 text-white px-4 py-2 rounded-full text-xs font-medium shrink-0" data-filter="all">All stations</button>
+                <button class="filter-chip bg-white text-gray-600 border border-gray-200/60 px-4 py-2 rounded-full text-xs font-medium shrink-0" data-filter="price">Lowest price</button>
+                <button class="filter-chip bg-white text-gray-600 border border-gray-200/60 px-4 py-2 rounded-full text-xs font-medium shrink-0" data-filter="queue">Shortest queue</button>
+                <button class="filter-chip bg-white text-gray-600 border border-gray-200/60 px-4 py-2 rounded-full text-xs font-medium shrink-0" data-filter="nearest">Nearest</button>
             </div>
 
-            <div class="reveal opacity-0 translate-y-8 transition-all duration-700 ease-out flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 id="station-heading" class="text-base md:text-lg font-semibold text-gray-900">Stations around Lekki</h3>
-                    <p id="station-subheading" class="text-xs text-gray-400">Showing 4 verified stations</p>
+                    <h3 id="station-heading" class="text-base md:text-lg font-semibold text-gray-900">Stations around you</h3>
+                    <p id="station-subheading" class="text-xs text-gray-400">Showing verified stations</p>
                 </div>
                 <span class="flex items-center text-[11px] font-medium text-gray-500">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5"></span> Live availability
                 </span>
             </div>
 
-            <!-- STATION CARDS GRID -->
-            <div class="reveal grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8 opacity-0 translate-y-8 transition-all duration-700 ease-out">
-                
-                <!-- Card 1 -->
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white">
-                                <i class="fa-solid fa-gas-pump text-base"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 text-sm">Nipco Energy</h4>
-                        <p class="text-[11px] text-gray-400 mb-4">
-                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>11 Admiralty Way, Lekki
-                        </p>
-
-                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
-                            <div>
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
-                                <p class="text-sm font-bold text-gray-900">₦875<span class="text-[10px] text-gray-400 font-normal">/L</span></p>
-                            </div>
-                            <div class="border-l border-gray-200 pl-3">
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
-                                <p class="text-sm font-bold text-gray-900">1.2 km</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
-                            <span class="flex items-center text-emerald-600">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5"></span> Low queue
-                            </span>
-                            <span class="flex items-center text-gray-400">
-                                <i class="fa-regular fa-clock mr-1"></i> ~ 4 min
-                            </span>
-                        </div>
-                    </div>
-                    <button class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
-                        <span>Buy from this station</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-red-700 rounded-xl flex items-center justify-center text-white">
-                                <i class="fa-solid fa-gas-pump text-base"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 text-sm">MRS Oil Nigeria</h4>
-                        <p class="text-[11px] text-gray-400 mb-4">
-                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>28 Ozumba Mbadiwe, VI
-                        </p>
-
-                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
-                            <div>
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
-                                <p class="text-sm font-bold text-gray-900">₦880<span class="text-[10px] text-gray-400 font-normal">/L</span></p>
-                            </div>
-                            <div class="border-l border-gray-200 pl-3">
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
-                                <p class="text-sm font-bold text-gray-900">2.8 km</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
-                            <span class="flex items-center text-amber-600">
-                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5"></span> Moderate
-                            </span>
-                            <span class="flex items-center text-gray-400">
-                                <i class="fa-regular fa-clock mr-1"></i> ~ 12 min
-                            </span>
-                        </div>
-                    </div>
-                    <button class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
-                        <span>Buy from this station</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center text-white">
-                                <i class="fa-solid fa-gas-pump text-base"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 text-sm">TotalEnergies</h4>
-                        <p class="text-[11px] text-gray-400 mb-4">
-                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>Chisco, Lekki-Epe Exp.
-                        </p>
-
-                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
-                            <div>
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
-                                <p class="text-sm font-bold text-gray-900">₦875<span class="text-[10px] text-gray-400 font-normal">/L</span></p>
-                            </div>
-                            <div class="border-l border-gray-200 pl-3">
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
-                                <p class="text-sm font-bold text-gray-900">4.1 km</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
-                            <span class="flex items-center text-emerald-600">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5"></span> Low queue
-                            </span>
-                            <span class="flex items-center text-gray-400">
-                                <i class="fa-regular fa-clock mr-1"></i> ~ 6 min
-                            </span>
-                        </div>
-                    </div>
-                    <button class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
-                        <span>Buy from this station</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-blue-800 rounded-xl flex items-center justify-center text-white">
-                                <i class="fa-solid fa-gas-pump text-base"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 text-sm">Northwest Petroleum</h4>
-                        <p class="text-[11px] text-gray-400 mb-4">
-                            <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>Chevron Drive, Lekki
-                        </p>
-
-                        <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
-                            <div>
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
-                                <p class="text-sm font-bold text-gray-900">₦890<span class="text-[10px] text-gray-400 font-normal">/L</span></p>
-                            </div>
-                            <div class="border-l border-gray-200 pl-3">
-                                <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
-                                <p class="text-sm font-bold text-gray-900">5.3 km</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
-                            <span class="flex items-center text-amber-600">
-                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5"></span> Busy
-                            </span>
-                            <span class="flex items-center text-gray-400">
-                                <i class="fa-regular fa-clock mr-1"></i> ~ 24 min
-                            </span>
-                        </div>
-                    </div>
-                    <button class="w-full border border-gray-200 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-1">
-                        <span>Buy from this station</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-
+            <!-- STATION CARDS GRID (Populated dynamically by findfuelpage.js without layout flicker) -->
+            <div id="stations-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+                <!-- Cards render smoothly here via JavaScript -->
             </div>
 
             <!-- MAP VIEW CONTAINER -->
@@ -355,9 +198,9 @@
                     </button>
                 </div>
 
-                <!-- Live Embedded Interactive Map with ID for dynamic updates -->
+                <!-- Live Embedded Interactive Map -->
                 <div id="embedded-map" class="absolute inset-0 hidden w-full h-full">
-                    <iframe id="map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=gas+station+Lekki,+Lagos&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
+                    <iframe id="map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=gas+station+Lagos&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
                 </div>
             </div>
 

@@ -10,7 +10,8 @@
 </head>
 
 <body>
-    <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+    <!-- HEADER BAR -->
+    <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100 relative">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
                 <i class="fa-solid fa-bolt text-yellow-300"></i>
@@ -27,14 +28,79 @@
                 <i class="fa-regular fa-circle-check text-emerald-700 text-sm"></i>
                 <span>Pay securely</span>
             </div>
-
         </div>
 
-        <button class="lg:hidden text-gray-700 text-xl focus:outline-none">
-            <i class="fa-solid fa-bars"></i>
+        <!-- Functional Hamburger Menu Toggle Button -->
+        <button id="menu-btn" class="lg:hidden w-10 h-10 bg-white border border-gray-200/80 rounded-xl flex items-center justify-center text-gray-700 shadow-sm hover:bg-gray-50 active:scale-95 transition focus:outline-none">
+            <i class="fa-solid fa-bars text-base"></i>
         </button>
     </div>
-    <main class="max-w-6xl mx-auto px-6 py-10 bg-gray-100">
+
+    <!-- MOBILE SIDEBAR DRAWER -->
+    <aside id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col justify-between p-6 transform -translate-x-full lg:translate-x-0 lg:hidden transition-transform duration-300 ease-in-out shrink-0 shadow-2xl">
+        <div>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-yellow-300"></i>
+                    </div>
+                    <span class="text-xl font-bold">
+                        <span>Fuel</span><span class="text-green-700">less</span>
+                    </span>
+                </div>
+                <!-- Close Button Inside Mobile Drawer -->
+                <button id="close-sidebar-btn" class="text-gray-400 hover:text-gray-600 text-lg focus:outline-none">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-1">
+                <p class="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-3 mt-2">Menu</p>
+
+                <a href="./welcomepage.html"
+                    class="flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-house text-base"></i>
+                    <span>Overview</span>
+                </a>
+
+                <a href="./findfuelpage.html"
+                    class="flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-gas-pump text-base"></i>
+                    <span>Find fuel</span>
+                </a>
+
+                <a href="./buyfuelpage.html"
+                    class="flex items-center space-x-3 px-4 py-3 bg-emerald-50 text-emerald-900 font-medium rounded-xl text-sm">
+                    <i class="fa-solid fa-wallet text-base"></i>
+                    <span>Buy fuel</span>
+                </a>
+
+                <a href="./mypurchase.html"
+                    class="flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-receipt text-base"></i>
+                    <span>My purchases</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-amber-200 text-amber-800 font-bold rounded-full flex items-center justify-center text-xs">
+                        AO
+                    </div>
+                    <div>
+                        <h5 class="text-xs font-semibold text-gray-900">Opeyemi Adegbesan</h5>
+                        <p class="text-[10px] text-gray-400">adegbesanopeyemi55@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CHECKOUT CONTENT -->
+    <main class="max-w-6xl mx-auto px-6 py-10 bg-gray-100 min-h-screen">
         <a href="./findfuelpage.html"
             class="inline-flex items-center space-x-2 text-xs font-semibold text-gray-500 hover:text-gray-800 mb-6">
             <i class="fa-solid fa-arrow-left text-[10px]"></i>
@@ -49,94 +115,74 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div class="lg:col-span-7 space-y-6">
-                <div
-                    class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <!-- SELECTED STATION CARD -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white">
                             <i class="fa-solid fa-gas-pump text-base"></i>
                         </div>
                         <div>
                             <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">SELECTED STATION</p>
-                            <h4 class="text-sm font-semibold text-gray-900">Nipco Energy</h4>
-                            <p class="text-[11px] text-gray-400">
+                            <h4 id="station-name-display" class="text-sm font-semibold text-gray-900">Nipco Energy</h4>
+                            <p id="station-address-display" class="text-[11px] text-gray-400">
                                 <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>11 Admiralty Way, Lekki.
                             </p>
                         </div>
                     </div>
-                    <button class="text-xs font-semibold text-emerald-800 hover:underline">Change</button>
+                    <a href="./findfuelpage.html" class="text-xs font-semibold text-emerald-800 hover:underline">Change</a>
                 </div>
 
+                <!-- FUEL TYPE -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-2">Fuel type</label>
-                    <div
-                        class="bg-white p-4 rounded-2xl border border-emerald-800 shadow-sm flex items-center justify-between">
+                    <div class="bg-white p-4 rounded-2xl border border-emerald-800 shadow-sm flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <input type="radio" checked
-                                class="w-4 h-4 text-emerald-900 accent-emerald-900 focus:ring-0">
+                            <input type="radio" checked class="w-4 h-4 text-emerald-900 accent-emerald-900 focus:ring-0">
                             <div>
                                 <p class="text-sm font-semibold text-gray-900">Premium Motor Spirit</p>
                                 <p class="text-[11px] text-gray-400">PMS • Petrol</p>
                             </div>
                         </div>
-                        <span class="text-xs font-bold text-gray-900">₦875<span
-                                class="text-[10px] text-gray-400 font-normal">/litre</span>
-                        </span>
+                        <span class="text-xs font-bold text-gray-900">₦<span id="price-per-litre-display">875</span><span class="text-[10px] text-gray-400 font-normal">/litre</span></span>
                     </div>
                 </div>
 
+                <!-- CHOOSE HOW TO BUY -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-2">Choose how to buy</label>
-                    <div class="bg-gray-100 p-1 rounded-xl flex mb-6">
-                        <button
-                            class="flex-1 bg-white text-gray-900 text-xs font-semibold py-2.5 rounded-lg shadow-sm">By
-                            litres</button>
-                        <button
-                            class="flex-1 text-gray-400 text-xs font-semibold py-2.5 rounded-lg hover:text-gray-700">By
-                            amount</button>
+                    <div class="bg-gray-200 p-1 rounded-xl flex mb-6">
+                        <button id="tab-litres" class="flex-1 bg-white text-gray-900 text-xs font-semibold py-2.5 rounded-lg shadow-sm transition">By litres</button>
+                        <button id="tab-amount" class="flex-1 text-gray-500 text-xs font-semibold py-2.5 rounded-lg hover:text-gray-700 transition">By amount</button>
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-4">
                         <div class="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3 mb-4">
-                            <button
-                                class="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-50 rounded-lg text-lg">-</button>
+                            <button id="decrement-btn" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg text-lg font-bold">-</button>
                             <div class="text-center">
-                                <span class="text-xl font-bold text-gray-900">20</span>
-                                <span
-                                    class="text-[10px] text-gray-400 font-semibold block uppercase tracking-wider">LITRES</span>
+                                <span id="input-value-display" class="text-xl font-bold text-gray-900">20</span>
+                                <span id="input-unit-display" class="text-[10px] text-gray-400 font-semibold block uppercase tracking-wider">LITRES</span>
                             </div>
-                            <button
-                                class="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-50 rounded-lg text-lg">+</button>
+                            <button id="increment-btn" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg text-lg font-bold">+</button>
                         </div>
 
-                        <div class="grid grid-cols-4 gap-2">
-                            <button
-                                class="border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50">10
-                                L</button>
-                            <button
-                                class="bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl">20
-                                L</button>
-                            <button
-                                class="border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50">30
-                                L</button>
-                            <button
-                                class="border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50">50
-                                L</button>
+                        <!-- Quick Select Buttons -->
+                        <div id="quick-select-container" class="grid grid-cols-4 gap-2">
+                            <!-- Populated dynamically via JS -->
                         </div>
                     </div>
                 </div>
 
+                <!-- PAYMENT METHOD -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-2">Payment method</label>
-                    <div
-                        class="bg-white p-4 rounded-2xl border border-emerald-800 shadow-sm flex items-center justify-between">
+                    <div class="bg-white p-4 rounded-2xl border border-emerald-800 shadow-sm flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div
-                                class="w-10 h-10 bg-emerald-50 text-emerald-800 rounded-xl flex items-center justify-center text-sm">
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-800 rounded-xl flex items-center justify-center text-sm">
                                 <i class="fa-solid fa-wallet"></i>
                             </div>
                             <div>
                                 <h5 class="text-sm font-semibold text-gray-900">Fuelless wallet</h5>
-                                <p class="text-[11px] text-gray-400">Balance: ₦42,850.00</p>
+                                <p class="text-[11px] text-gray-400">Balance: <span id="wallet-balance-display">₦42,850.00</span></p>
                             </div>
                         </div>
                         <input type="radio" checked class="w-4 h-4 text-emerald-900 accent-emerald-900 focus:ring-0">
@@ -144,21 +190,22 @@
                 </div>
             </div>
 
+            <!-- ORDER SUMMARY -->
             <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Order summary</h3>
 
                 <div class="bg-emerald-900 text-white p-6 rounded-2xl mb-6 text-center">
                     <div class="flex items-center justify-center space-x-2 mb-1">
                         <i class="fa-solid fa-gas-pump text-lg text-emerald-300"></i>
-                        <span class="text-3xl font-bold">20.0</span>
+                        <span id="summary-main-value" class="text-3xl font-bold">20.0</span>
                     </div>
-                    <p class="text-[10px] text-emerald-200/80 font-semibold tracking-wider uppercase">LITRES</p>
+                    <p id="summary-unit-label" class="text-[10px] text-emerald-200/80 font-semibold tracking-wider uppercase">LITRES</p>
                 </div>
 
                 <div class="space-y-3 pb-6 border-b border-gray-100 mb-6 text-xs">
                     <div class="flex justify-between text-gray-500">
                         <span>Fuel subtotal</span>
-                        <span class="font-semibold text-gray-900">₦17,500</span>
+                        <span id="summary-subtotal" class="font-semibold text-gray-900">₦17,500</span>
                     </div>
                     <div class="flex justify-between text-gray-500">
                         <span>Service fee</span>
@@ -168,12 +215,12 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <span class="text-sm font-medium text-gray-500">Total to pay</span>
-                    <span class="text-2xl font-bold text-gray-900">₦17,600</span>
+                    <span id="summary-total" class="text-2xl font-bold text-gray-900">₦17,600</span>
                 </div>
 
-                <button
+                <button id="pay-btn"
                     class="w-full bg-emerald-900 text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center space-x-2 hover:bg-emerald-800 transition mb-4">
-                    <span>Pay ₦17,600</span>
+                    <span id="pay-btn-text">Pay ₦17,600</span>
                     <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
 
@@ -184,6 +231,9 @@
             </div>
         </div>
     </main>
+
+    <!-- External JavaScript Linking -->
+    <script src="./Javascript Folders/buyfuelpage.js"></script>
 </body>
 
 </html>
