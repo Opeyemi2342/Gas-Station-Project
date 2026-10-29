@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 0. PROFILE MODAL FUNCTIONALITY & DATA SYNC
+    // 0. PROFILE MODAL FUNCTIONALITY
     // ==========================================
     const profileBtn = document.getElementById("profile-nav-btn");
     const profileModal = document.getElementById("profile-modal");
@@ -12,18 +12,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (profileBtn && profileModal) {
         profileBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            const currentWallet = localStorage.getItem("fuelless_wallet_balance") || "0.00";
-            const currentTotalFuel = localStorage.getItem("fuelless_total_litres") || "0";
 
-            const walletDisplay = document.getElementById("profile-wallet-display");
-            const fuelDisplay = document.getElementById("profile-fuel-display");
+            const currentWallet =
+                localStorage.getItem("fuelless_wallet_balance") || "0.00";
+            const currentTotalFuel =
+                localStorage.getItem("fuelless_total_litres") || "0";
+
+            const walletDisplay =
+                document.getElementById("profile-wallet-display");
+            const fuelDisplay =
+                document.getElementById("profile-fuel-display");
 
             if (walletDisplay) {
-                walletDisplay.textContent = "₦" + parseFloat(currentWallet).toLocaleString('en-NG', { 
-                    minimumFractionDigits: 2, 
-                    maximumFractionDigits: 2 
-                });
+                walletDisplay.textContent =
+                    "₦" + Number(currentWallet).toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
             }
+
             if (fuelDisplay) {
                 fuelDisplay.textContent = currentTotalFuel + " L";
             }
@@ -33,15 +40,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const closeProfileModalFunc = () => {
-        if (profileModal) {
-            profileModal.classList.add("hidden");
-            profileModal.classList.remove("flex");
-        }
-    };
+    function closeProfile() {
+        if (!profileModal) return;
+        profileModal.classList.add("hidden");
+        profileModal.classList.remove("flex");
+    }
 
-    if (closeProfileModal) closeProfileModal.addEventListener("click", closeProfileModalFunc);
-    if (closeProfileModalBtn) closeProfileModalBtn.addEventListener("click", closeProfileModalFunc);
+    if (closeProfileModal) {
+        closeProfileModal.addEventListener("click", closeProfile);
+    }
+
+    if (closeProfileModalBtn) {
+        closeProfileModalBtn.addEventListener("click", closeProfile);
+    }
 
     if (clearDataBtn) {
         clearDataBtn.addEventListener("click", () => {
@@ -52,229 +63,368 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==========================================
+    // 1. SELECTED STATION
+    // ==========================================
+    let savedStation = null;
 
-    // ==========================================
-    // 1. RETRIEVE SELECTED STATION FROM LOCALSTORAGE
-    // ==========================================
-    const savedStation = JSON.parse(localStorage.getItem('fuelless_selected_station'));
-    const stationNameEl = document.getElementById('station-name-display');
-    const stationAddressEl = document.getElementById('station-address-display');
-    const pricePerLitreEl = document.getElementById('price-per-litre-display');
-    const radioPriceDisplay = document.getElementById('radio-price-display');
+    try {
+        savedStation = JSON.parse(
+            localStorage.getItem("fuelless_selected_station")
+        );
+    } catch (error) {
+        console.error("Could not load selected station:", error);
+    }
+
+    const stationNameEl = document.getElementById("station-name-display");
+    const stationAddressEl = document.getElementById("station-address-display");
+    const pricePerLitreEl = document.getElementById("price-per-litre-display");
+    const radioPriceDisplay = document.getElementById("radio-price-display");
 
     let pricePerLitre = 875;
+
     if (savedStation) {
-        if (stationNameEl) stationNameEl.textContent = savedStation.name;
-        if (stationAddressEl) stationAddressEl.innerHTML = `<i class="fa-solid fa-location-dot text-[10px] mr-1"></i>${savedStation.address}`;
-        if (savedStation.price) {
-            pricePerLitre = parseFloat(savedStation.price);
-            if (pricePerLitreEl) pricePerLitreEl.textContent = pricePerLitre.toLocaleString();
-            if (radioPriceDisplay) radioPriceDisplay.textContent = pricePerLitre.toLocaleString();
+        if (stationNameEl) {
+            stationNameEl.textContent = savedStation.name || "Fuel Station";
+        }
+
+        if (stationAddressEl) {
+            stationAddressEl.textContent = savedStation.address || "";
+        }
+
+        const savedPrice = Number(savedStation.price);
+
+        if (savedPrice > 0) {
+            pricePerLitre = savedPrice;
+
+            if (pricePerLitreEl) {
+                pricePerLitreEl.textContent = pricePerLitre.toLocaleString("en-NG");
+            }
+
+            if (radioPriceDisplay) {
+                radioPriceDisplay.textContent = pricePerLitre.toLocaleString("en-NG");
+            }
         }
     }
 
+    // ==========================================
+    // 2. WALLET BALANCE
+    // ==========================================
+    const walletBalanceEl = document.getElementById("wallet-balance-display");
 
-    // ==========================================
-    // 2. RETRIEVE LIVE WALLET BALANCE
-    // ==========================================
-    const walletBalanceEl = document.getElementById('wallet-balance-display');
-    
-    // Checks for stored balance, falling back to 42,850.00 if brand new
-    let currentWalletBalance = parseFloat(localStorage.getItem('fuelless_wallet_balance'));
+    let currentWalletBalance = parseFloat(
+        localStorage.getItem("fuelless_wallet_balance")
+    );
+
     if (isNaN(currentWalletBalance)) {
-        currentWalletBalance = 42850.00;
-        localStorage.setItem('fuelless_wallet_balance', currentWalletBalance.toFixed(2));
-    }
-    
-    if (walletBalanceEl) {
-        walletBalanceEl.textContent = `₦${currentWalletBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        currentWalletBalance = 42850;
+        localStorage.setItem(
+            "fuelless_wallet_balance",
+            currentWalletBalance.toFixed(2)
+        );
     }
 
+    function updateWalletDisplay() {
+        if (walletBalanceEl) {
+            walletBalanceEl.textContent =
+                "₦" + currentWalletBalance.toLocaleString("en-NG", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+        }
+    }
+
+    updateWalletDisplay();
 
     // ==========================================
-    // 3. STATE VARIABLES & DOM ELEMENTS
+    // 3. PURCHASE CONTROLS
     // ==========================================
-    let mode = 'litres'; // 'litres' or 'amount'
-    let currentValue = 20; // Default 20 litres
+    let mode = "litres";
+    let currentValue = 20;
     const serviceFee = 100;
 
-    const tabLitres = document.getElementById('tab-litres');
-    const tabAmount = document.getElementById('tab-amount');
-    const inputValueDisplay = document.getElementById('input-value-display');
-    const inputUnitDisplay = document.getElementById('input-unit-display');
-    const decrementBtn = document.getElementById('decrement-btn');
-    const incrementBtn = document.getElementById('increment-btn');
-    const quickSelectContainer = document.getElementById('quick-select-container');
-    
-    const summaryMainValue = document.getElementById('summary-main-value');
-    const summaryUnitLabel = document.getElementById('summary-unit-label');
-    const summarySubtotal = document.getElementById('summary-subtotal');
-    const summaryTotal = document.getElementById('summary-total');
-    const payBtnText = document.getElementById('pay-btn-text');
-    const payBtn = document.getElementById('pay-btn');
+    const tabLitres = document.getElementById("tab-litres");
+    const tabAmount = document.getElementById("tab-amount");
+    const inputValueDisplay = document.getElementById("input-value-display");
+    const inputUnitDisplay = document.getElementById("input-unit-display");
+    const decrementBtn = document.getElementById("decrement-btn");
+    const incrementBtn = document.getElementById("increment-btn");
+    const quickSelectContainer = document.getElementById("quick-select-container");
 
+    const summaryMainValue = document.getElementById("summary-main-value");
+    const summaryUnitLabel = document.getElementById("summary-unit-label");
+    const summarySubtotal = document.getElementById("summary-subtotal");
+    const summaryTotal = document.getElementById("summary-total");
+    const payBtnText = document.getElementById("pay-btn-text");
+    const payBtn = document.getElementById("pay-btn");
 
     // ==========================================
-    // 4. CALCULATION & RENDERING LOGIC
+    // 4. CALCULATIONS
     // ==========================================
     function updateCalculations() {
-        let subtotal = 0;
-        if (mode === 'litres') {
+        let subtotal;
+
+        if (mode === "litres") {
             subtotal = currentValue * pricePerLitre;
-            if (inputValueDisplay) inputValueDisplay.textContent = currentValue;
-            if (inputUnitDisplay) inputUnitDisplay.textContent = 'LITRES';
-            if (summaryMainValue) summaryMainValue.textContent = currentValue.toFixed(1);
-            if (summaryUnitLabel) summaryUnitLabel.textContent = 'LITRES';
+
+            if (inputValueDisplay) {
+                inputValueDisplay.textContent = currentValue;
+            }
+
+            if (inputUnitDisplay) {
+                inputUnitDisplay.textContent = "LITRES";
+            }
+
+            if (summaryMainValue) {
+                summaryMainValue.textContent = currentValue.toFixed(1);
+            }
+
+            if (summaryUnitLabel) {
+                summaryUnitLabel.textContent = "LITRES";
+            }
         } else {
-            subtotal = currentValue; // currentValue represents Naira amount
-            if (inputValueDisplay) inputValueDisplay.textContent = currentValue.toLocaleString();
-            if (inputUnitDisplay) inputUnitDisplay.textContent = 'NAIRA (₦)';
-            const equivalentLitres = (currentValue / pricePerLitre).toFixed(1);
-            if (summaryMainValue) summaryMainValue.textContent = equivalentLitres;
-            if (summaryUnitLabel) summaryUnitLabel.textContent = 'LITRES EQUIVALENT';
+            subtotal = currentValue;
+
+            if (inputValueDisplay) {
+                inputValueDisplay.textContent = currentValue.toLocaleString("en-NG");
+            }
+
+            if (inputUnitDisplay) {
+                inputUnitDisplay.textContent = "NAIRA (₦)";
+            }
+
+            if (summaryMainValue) {
+                summaryMainValue.textContent =
+                    (currentValue / pricePerLitre).toFixed(1);
+            }
+
+            if (summaryUnitLabel) {
+                summaryUnitLabel.textContent = "LITRES EQUIVALENT";
+            }
         }
 
         const total = subtotal + serviceFee;
-        if (summarySubtotal) summarySubtotal.textContent = `₦${subtotal.toLocaleString()}`;
-        if (summaryTotal) summaryTotal.textContent = `₦${total.toLocaleString()}`;
+
+        if (summarySubtotal) {
+            summarySubtotal.textContent =
+                "₦" + subtotal.toLocaleString("en-NG");
+        }
+
+        if (summaryTotal) {
+            summaryTotal.textContent =
+                "₦" + total.toLocaleString("en-NG");
+        }
+
         if (payBtnText) {
-            payBtnText.textContent = `Pay ₦${total.toLocaleString()}`;
+            payBtnText.textContent =
+                "Pay ₦" + total.toLocaleString("en-NG");
         }
     }
 
+    // ==========================================
+    // 5. QUICK SELECT BUTTONS
+    // ==========================================
     function renderQuickButtons() {
         if (!quickSelectContainer) return;
-        quickSelectContainer.innerHTML = '';
-        
-        if (mode === 'litres') {
-            const presets = [10, 20, 30, 50];
-            presets.forEach(val => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                const isSelected = currentValue === val;
-                btn.className = isSelected 
-                    ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl transition"
-                    : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50 transition";
-                btn.textContent = `${val} L`;
-                btn.addEventListener('click', () => {
-                    currentValue = val;
-                    renderQuickButtons();
-                    updateCalculations();
-                });
-                quickSelectContainer.appendChild(btn);
+
+        quickSelectContainer.innerHTML = "";
+
+        const presets = mode === "litres"
+            ? [10, 20, 30, 50]
+            : [5000, 10000, 20000, 50000];
+
+        presets.forEach((value) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+
+            const isSelected = currentValue === value;
+
+            btn.className = isSelected
+                ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl transition"
+                : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50 transition";
+
+            btn.textContent = mode === "litres"
+                ? `${value} L`
+                : `₦${value.toLocaleString("en-NG")}`;
+
+            btn.addEventListener("click", () => {
+                currentValue = value;
+                renderQuickButtons();
+                updateCalculations();
             });
-        } else {
-            const presets = [5000, 10000, 20000, 50000];
-            presets.forEach(val => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                const isSelected = currentValue === val;
-                btn.className = isSelected 
-                    ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl transition"
-                    : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50 transition";
-                btn.textContent = `₦${val.toLocaleString()}`;
-                btn.addEventListener('click', () => {
-                    currentValue = val;
-                    renderQuickButtons();
-                    updateCalculations();
-                });
-                quickSelectContainer.appendChild(btn);
-            });
-        }
+
+            quickSelectContainer.appendChild(btn);
+        });
     }
 
-
     // ==========================================
-    // 5. EVENT LISTENERS
+    // 6. SWITCH BETWEEN LITRES AND AMOUNT
     // ==========================================
     if (tabLitres && tabAmount) {
-        tabLitres.addEventListener('click', () => {
-            mode = 'litres';
-            currentValue = 20; 
-            tabLitres.className = "flex-1 bg-white text-gray-900 text-xs font-semibold py-2.5 rounded-lg shadow-sm transition";
-            tabAmount.className = "flex-1 text-gray-500 text-xs font-semibold py-2.5 rounded-lg hover:text-gray-700 transition";
+        tabLitres.addEventListener("click", () => {
+            mode = "litres";
+            currentValue = 20;
+
+            tabLitres.className =
+                "flex-1 bg-white text-gray-900 text-xs font-semibold py-2.5 rounded-lg shadow-sm transition";
+
+            tabAmount.className =
+                "flex-1 text-gray-500 text-xs font-semibold py-2.5 rounded-lg hover:text-gray-700 transition";
+
             renderQuickButtons();
             updateCalculations();
         });
 
-        tabAmount.addEventListener('click', () => {
-            mode = 'amount';
-            currentValue = 10000; 
-            tabAmount.className = "flex-1 bg-white text-gray-900 text-xs font-semibold py-2.5 rounded-lg shadow-sm transition";
-            tabLitres.className = "flex-1 text-gray-500 text-xs font-semibold py-2.5 rounded-lg hover:text-gray-700 transition";
-            renderQuickButtons();
-            updateCalculations();
-        });
-    }
+        tabAmount.addEventListener("click", () => {
+            mode = "amount";
+            currentValue = 10000;
 
-    if (incrementBtn && decrementBtn) {
-        incrementBtn.addEventListener('click', () => {
-            if (mode === 'litres') {
-                currentValue += 5;
-            } else {
-                currentValue += 2500;
-            }
-            renderQuickButtons();
-            updateCalculations();
-        });
+            tabAmount.className =
+                "flex-1 bg-white text-gray-900 text-xs font-semibold py-2.5 rounded-lg shadow-sm transition";
 
-        decrementBtn.addEventListener('click', () => {
-            if (mode === 'litres') {
-                if (currentValue > 5) currentValue -= 5;
-            } else {
-                if (currentValue > 2500) currentValue -= 2500;
-            }
+            tabLitres.className =
+                "flex-1 text-gray-500 text-xs font-semibold py-2.5 rounded-lg hover:text-gray-700 transition";
+
             renderQuickButtons();
             updateCalculations();
         });
     }
 
-    // Payment / Checkout Action & Wallet Deduction
+    // ==========================================
+    // 7. INCREMENT AND DECREMENT
+    // ==========================================
+    if (incrementBtn) {
+        incrementBtn.addEventListener("click", () => {
+            currentValue += mode === "litres" ? 5 : 2500;
+            renderQuickButtons();
+            updateCalculations();
+        });
+    }
+
+    if (decrementBtn) {
+        decrementBtn.addEventListener("click", () => {
+            const step = mode === "litres" ? 5 : 2500;
+            const minimum = step;
+
+            if (currentValue > minimum) {
+                currentValue -= step;
+            }
+
+            renderQuickButtons();
+            updateCalculations();
+        });
+    }
+
+    // ==========================================
+    // 8. CHECKOUT AND REAL EXPIRY TIMESTAMP
+    // ==========================================
     if (payBtn) {
-        payBtn.addEventListener('click', (e) => {
+        payBtn.addEventListener("click", (e) => {
             e.preventDefault();
 
-            let subtotal = mode === 'litres' ? currentValue * pricePerLitre : currentValue;
-            let finalTotal = subtotal + serviceFee;
-            let purchasedLitres = mode === 'litres' ? currentValue : (currentValue / pricePerLitre);
+            const subtotal = mode === "litres"
+                ? currentValue * pricePerLitre
+                : currentValue;
+
+            const finalTotal = subtotal + serviceFee;
+
+            const purchasedLitres = mode === "litres"
+                ? currentValue
+                : currentValue / pricePerLitre;
 
             if (currentWalletBalance < finalTotal) {
-                alert("Insufficient wallet balance! Please fund your wallet from the overview page.");
+                alert(
+                    "Insufficient wallet balance! Please fund your wallet from the overview page."
+                );
                 return;
             }
 
-            // Deduct balance and update localStorage keys for overview sync
-            currentWalletBalance -= finalTotal;
-            localStorage.setItem('fuelless_wallet_balance', currentWalletBalance.toFixed(2));
+            // Calculate everything before saving the purchase.
+            const purchasedAt = Date.now();
+            const expiresAt = purchasedAt + (24 * 60 * 60 * 1000);
 
-            // Track total litres bought for profile stats
-            let totalLitresBought = parseFloat(localStorage.getItem('fuelless_total_litres')) || 0;
-            localStorage.setItem('fuelless_total_litres', (totalLitresBought + purchasedLitres).toFixed(1));
+            const randomCode =
+                "FL-" +
+                Math.floor(1000 + Math.random() * 9000) +
+                "-" +
+                Math.random().toString(36).substring(2, 6).toUpperCase();
 
-            // Generate Pass Code
-            const randomCode = 'FL-' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-
-            // Save purchase record for My Purchases page
             const purchaseRecord = {
-                station: savedStation ? savedStation.name : "TotalEnergies",
-                address: savedStation ? savedStation.address : "Chisco, Lekki-Epe Exp.",
+                station: savedStation?.name || "TotalEnergies",
+                address: savedStation?.address || "Chisco, Lekki-Epe Exp.",
                 litres: purchasedLitres.toFixed(1),
                 totalPaid: finalTotal,
                 passCode: randomCode,
-                date: "Today, " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                status: 'Completed'
+
+                // Exact timestamps used by the live countdown.
+                purchasedAt: purchasedAt,
+                expiresAt: expiresAt,
+
+                // Keep the readable purchase date for compatibility.
+                date: new Date(purchasedAt).toLocaleString("en-NG", {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }),
+
+                status: "Completed"
             };
 
-            let existingPurchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
-            existingPurchases.unshift(purchaseRecord);
-            localStorage.setItem('fuelless_purchases', JSON.stringify(existingPurchases));
+            try {
+                const existingPurchases = JSON.parse(
+                    localStorage.getItem("fuelless_purchases") || "[]"
+                );
 
-            alert(`Payment of ₦${finalTotal.toLocaleString()} successful! Directing to your digital Fuel Pass...`);
-            window.location.href = './mypurchase.html';
+                if (!Array.isArray(existingPurchases)) {
+                    throw new Error("Purchase records are invalid.");
+                }
+
+                // Save the purchase before deducting the wallet.
+                existingPurchases.unshift(purchaseRecord);
+
+                localStorage.setItem(
+                    "fuelless_purchases",
+                    JSON.stringify(existingPurchases)
+                );
+
+                currentWalletBalance -= finalTotal;
+
+                localStorage.setItem(
+                    "fuelless_wallet_balance",
+                    currentWalletBalance.toFixed(2)
+                );
+
+                const totalLitresBought = parseFloat(
+                    localStorage.getItem("fuelless_total_litres")
+                ) || 0;
+
+                localStorage.setItem(
+                    "fuelless_total_litres",
+                    (totalLitresBought + purchasedLitres).toFixed(1)
+                );
+
+                alert(
+                    `Payment of ₦${finalTotal.toLocaleString("en-NG")} successful!\n\n` +
+                    `Pass code: ${randomCode}\n` +
+                    `Valid until: ${new Date(expiresAt).toLocaleString()}\n\n` +
+                    "Opening your fuel pass..."
+                );
+
+                window.location.href = "./mypurchase.html";
+
+            } catch (error) {
+                console.error("Purchase could not be saved:", error);
+
+                alert(
+                    "Your purchase could not be saved locally. " +
+                    "Please check your browser storage and try again."
+                );
+            }
         });
     }
 
-    // Initial Initialization
+    // ==========================================
+    // 9. INITIALIZE
+    // ==========================================
     renderQuickButtons();
     updateCalculations();
 });

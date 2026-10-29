@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 1. MASTER STATION DATABASE
+    // 1. FALLBACK / DEFAULT STATIONS DATABASE
     // ==========================================
-    const masterStationsDatabase = [
+    const fallbackStations = [
         {
             name: "Conoil Mega Station",
             address: "Obalende Road, Ikoyi/Obalende",
@@ -79,32 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
             colorClass: "bg-rose-600"
         },
         {
-            name: "Mobil Oil Station",
-            address: "Awolowo Road, Obalende",
-            area: "Obalende",
-            price: 875,
-            distanceKm: 1.4,
-            queueStatus: "Low queue",
-            queueColor: "text-emerald-600",
-            dotColor: "bg-emerald-500",
-            waitTime: "5 min",
-            colorClass: "bg-red-600"
-        },
-        {
-            name: "AP Filling Station",
-            address: "Police Barracks Rd, Obalende",
-            area: "Obalende",
-            price: 880,
-            distanceKm: 2.1,
-            queueStatus: "Fast moving",
-            queueColor: "text-emerald-600",
-            dotColor: "bg-emerald-500",
-            waitTime: "4 min",
-            colorClass: "bg-blue-700"
-        },
-        {
             name: "Nipco Energy",
-            address: "11 Admiralty Way, Lekki",
+            address: "11 Admiralty Way, Lekki Phase 1",
             area: "Lekki",
             price: 875,
             distanceKm: 3.2,
@@ -113,26 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             dotColor: "bg-emerald-500",
             waitTime: "4 min",
             colorClass: "bg-orange-500"
-        },
-        {
-            name: "MRS Oil Nigeria",
-            address: "28 Ozumba Mbadiwe, VI",
-            area: "Victoria Island",
-            price: 880,
-            distanceKm: 3.8,
-            queueStatus: "Moderate",
-            queueColor: "text-amber-600",
-            dotColor: "bg-amber-500",
-            waitTime: "12 min",
-            colorClass: "bg-red-700"
         }
     ];
 
-    // Default: Show closest stations around you (<= 2.0 km)
-    let currentActiveList = masterStationsDatabase.filter(st => st.distanceKm <= 2.0);
-    if (currentActiveList.length === 0) {
-        currentActiveList = [masterStationsDatabase[0]];
-    }
+    let masterStationsDatabase = [...fallbackStations];
+    let currentActiveList = [...masterStationsDatabase];
 
     const gridContainer = document.getElementById('stations-grid');
     const searchInput = document.getElementById('search-input');
@@ -145,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapPreviewBg = document.getElementById('map-preview-bg');
     const embeddedMap = document.getElementById('embedded-map');
     const openMapBtn = document.getElementById('open-map-btn');
+
 
     // ==========================================
     // 2. FLICKER-FREE RENDER FUNCTION
@@ -159,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyDiv.className = "col-span-full py-12 text-center text-gray-400 text-xs";
             emptyDiv.innerHTML = `
                 <i class="fa-solid fa-gas-pump text-2xl mb-2 opacity-30"></i>
-                <p>No fueling stations found matching your criteria.</p>
+                <p>No fueling stations found within 5km of your location.</p>
             `;
             fragment.appendChild(emptyDiv);
             gridContainer.innerHTML = '';
@@ -171,14 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const isNear = station.distanceKm <= 2.0;
             const nearBadge = isNear 
                 ? `<span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i> Near you</span>`
-                : `<span class="bg-gray-100 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded-full">Nearby</span>`;
+                : `<span class="bg-gray-100 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded-full">${station.distanceKm} km away</span>`;
 
             const card = document.createElement('div');
             card.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between";
             card.innerHTML = `
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 ${station.colorClass} rounded-xl flex items-center justify-center text-white">
+                        <div class="w-10 h-10 ${station.colorClass || 'bg-emerald-700'} rounded-xl flex items-center justify-center text-white">
                             <i class="fa-solid fa-gas-pump text-base"></i>
                         </div>
                         <div class="flex items-center space-x-1.5">
@@ -187,8 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <h4 class="font-semibold text-gray-900 text-sm">${station.name}</h4>
-                    <p class="text-[11px] text-gray-400 mb-4">
-                        <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>${station.address}
+                    <p class="text-[11px] text-gray-500 mb-4 line-clamp-2">
+                        <i class="fa-solid fa-location-dot text-[10px] mr-1 text-emerald-700"></i>${station.address}
                     </p>
 
                     <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
@@ -203,11 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
-                        <span class="flex items-center ${station.queueColor}">
-                            <span class="w-1.5 h-1.5 ${station.dotColor} rounded-full mr-1.5"></span> ${station.queueStatus}
+                        <span class="flex items-center ${station.queueColor || 'text-emerald-600'}">
+                            <span class="w-1.5 h-1.5 ${station.dotColor || 'bg-emerald-500'} rounded-full mr-1.5"></span> ${station.queueStatus || 'Low queue'}
                         </span>
                         <span class="flex items-center text-gray-400">
-                            <i class="fa-regular fa-clock mr-1"></i> ~ ${station.waitTime}
+                            <i class="fa-regular fa-clock mr-1"></i> ~ ${station.waitTime || '4 min'}
                         </span>
                     </div>
                 </div>
@@ -238,11 +200,179 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    renderStations(currentActiveList);
+
+    // ==========================================
+    // 3. FETCH STATIONS WITHIN STRICT 5KM RADIUS
+    // ==========================================
+    async function fetchRealTimeStations(lat, lng, areaName = "your area") {
+        if (locationText) locationText.textContent = "Fetching Stations...";
+
+        try {
+            // Query Overpass API within a 5000m (5km) radius window
+            const radius = 5000; 
+            const overpassQuery = `[out:json];node["amenity"="fuel"](around:${radius},${lat},${lng});out;`;
+            const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            let fetchedStations = [];
+
+            if (data && data.elements && data.elements.length > 0) {
+                const stationPromises = data.elements.map(async (el, index) => {
+                    const rawName = el.tags.name || el.tags.brand || el.tags.operator || `Fuel Station #${index + 1}`;
+                    const dist = calculateDistance(lat, lng, el.lat, el.lon);
+
+                    let detailedAddress = "";
+                    if (el.tags["addr:street"]) {
+                        detailedAddress = `${el.tags["addr:housenumber"] ? el.tags["addr:housenumber"] + " " : ""}${el.tags["addr:street"]}, ${areaName}`;
+                    } else if (el.tags["addr:full"]) {
+                        detailedAddress = el.tags["addr:full"];
+                    } else if (el.tags["addr:suburb"]) {
+                        detailedAddress = `${el.tags["addr:suburb"]}, ${areaName}`;
+                    }
+
+                    // Reverse geocode if specific address tags are missing
+                    if (!detailedAddress) {
+                        try {
+                            const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${el.lat}&lon=${el.lon}`);
+                            const revData = await revRes.json();
+                            if (revData && revData.address) {
+                                const road = revData.address.road || revData.address.pedestrian || revData.address.suburb || "";
+                                const suburb = revData.address.suburb || revData.address.neighbourhood || areaName;
+                                detailedAddress = road ? `${road}, ${suburb}` : `${suburb}, Lagos`;
+                            }
+                        } catch (e) {
+                            detailedAddress = `${areaName} Main Road, Lagos`;
+                        }
+                    }
+
+                    return {
+                        name: rawName,
+                        address: detailedAddress || `${areaName}, Lagos`,
+                        area: areaName,
+                        price: 875 + (index % 3) * 5,
+                        distanceKm: parseFloat(dist.toFixed(1)),
+                        queueStatus: index % 2 === 0 ? "Low queue" : "Moderate",
+                        queueColor: index % 2 === 0 ? "text-emerald-600" : "text-amber-600",
+                        dotColor: index % 2 === 0 ? "bg-emerald-500" : "bg-amber-500",
+                        waitTime: `${3 + (index * 2)} min`,
+                        colorClass: index % 3 === 0 ? "bg-yellow-600" : (index % 3 === 1 ? "bg-emerald-700" : "bg-orange-500")
+                    };
+                });
+
+                fetchedStations = await Promise.all(stationPromises);
+            } else {
+                fetchedStations = [...fallbackStations];
+            }
+
+            // STRICT FILTER: Keep only stations <= 5.0 km away
+            masterStationsDatabase = fetchedStations.filter(st => st.distanceKm <= 5.0);
+
+            // STRICT SORT: Closest to Farthest (ascending order)
+            masterStationsDatabase.sort((a, b) => a.distanceKm - b.distanceKm);
+
+            currentActiveList = [...masterStationsDatabase];
+
+            if (stationHeading) stationHeading.textContent = `Stations within 5km of ${areaName}`;
+            if (stationSubheading) stationSubheading.textContent = `Showing closest verified stations sorted by distance`;
+
+            renderStations(currentActiveList);
+
+            if (locationText) locationText.textContent = "Location Active (5km)";
+
+        } catch (err) {
+            console.error("Live station fetch error:", err);
+            masterStationsDatabase = fallbackStations.filter(st => st.distanceKm <= 5.0);
+            masterStationsDatabase.sort((a, b) => a.distanceKm - b.distanceKm);
+            currentActiveList = [...masterStationsDatabase];
+            renderStations(currentActiveList);
+            if (locationText) locationText.textContent = "Use my location";
+        }
+    }
+
+    // Helper to calculate exact distance in KM
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 
 
     // ==========================================
-    // 3. REAL-TIME SEARCH
+    // 4. AUTO-DETECT GPS ON LOAD
+    // ==========================================
+    function autoDetectUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    let locationName = "your area";
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                        const data = await response.json();
+                        if (data && data.address) {
+                            locationName = data.address.suburb || data.address.neighbourhood || data.address.city_district || data.address.city || "your area";
+                        }
+                    } catch (e) {
+                        console.log("Reverse geocoding failed");
+                    }
+
+                    if (mapIframe) {
+                        mapIframe.src = `https://maps.google.com/maps?q=gas+station&sll=${lat},${lng}&z=14&output=embed`;
+                    }
+
+                    if (mapPreviewBg && embeddedMap && mapContainer) {
+                        mapPreviewBg.classList.add('hidden');
+                        embeddedMap.classList.remove('hidden');
+                        mapContainer.classList.remove('h-48');
+                        mapContainer.classList.add('h-96');
+                    }
+
+                    await fetchRealTimeStations(lat, lng, locationName);
+                },
+                (error) => {
+                    console.log("Geolocation permission denied/unavailable. Loading defaults.");
+                    masterStationsDatabase = fallbackStations.filter(st => st.distanceKm <= 5.0);
+                    currentActiveList = [...masterStationsDatabase];
+                    renderStations(currentActiveList);
+                },
+                { timeout: 8000 }
+            );
+        } else {
+            masterStationsDatabase = fallbackStations.filter(st => st.distanceKm <= 5.0);
+            currentActiveList = [...masterStationsDatabase];
+            renderStations(currentActiveList);
+        }
+    }
+
+    autoDetectUserLocation();
+
+
+    // ==========================================
+    // 5. MANUAL LOCATION BUTTON CLICK
+    // ==========================================
+    if (locationBtn && locationText) {
+        locationBtn.addEventListener('click', () => {
+            if (window.location.protocol === "file:") {
+                alert("Geolocation requires running via a local server (like Live Server in VS Code).");
+                return;
+            }
+            autoDetectUserLocation();
+        });
+    }
+
+
+    // ==========================================
+    // 6. REAL-TIME SEARCH INPUT
     // ==========================================
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -258,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderStations(currentActiveList);
 
             if (stationHeading) {
-                stationHeading.textContent = query ? `Search results for "${query}"` : "Stations around you";
+                stationHeading.textContent = query ? `Search results for "${query}"` : "Stations within 5km";
             }
             if (stationSubheading) {
                 stationSubheading.textContent = `Showing ${filtered.length} matching station(s)`;
@@ -281,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 4. FILTER CHIPS
+    // 7. FILTER CHIPS
     // ==========================================
     const filterChips = document.querySelectorAll('.filter-chip');
     filterChips.forEach(chip => {
@@ -303,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (filterType === 'nearest') {
                 sortedList.sort((a, b) => a.distanceKm - b.distanceKm);
             } else {
-                sortedList = masterStationsDatabase.filter(st => st.distanceKm <= 2.0);
+                sortedList.sort((a, b) => a.distanceKm - b.distanceKm);
             }
 
             currentActiveList = sortedList;
@@ -313,74 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 5. GEOLOCATION & GPS ACTIVATION
-    // ==========================================
-    if (locationBtn && locationText) {
-        locationBtn.addEventListener('click', () => {
-            if (window.location.protocol === "file:") {
-                alert("Geolocation requires running via a local server (like Live Server in VS Code).");
-                return;
-            }
-
-            if (navigator.geolocation) {
-                locationText.textContent = "Detecting GPS...";
-                
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        
-                        locationText.textContent = "Location Active";
-                        
-                        let locationName = "your area";
-                        try {
-                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-                            const data = await response.json();
-                            if (data && data.address) {
-                                locationName = data.address.suburb || data.address.neighbourhood || data.address.city_district || data.address.city || "your area";
-                            }
-                        } catch (err) {
-                            console.log("Geocoding fetch failed");
-                        }
-
-                        currentActiveList = masterStationsDatabase.filter(st => st.distanceKm <= 2.5).sort((a, b) => a.distanceKm - b.distanceKm);
-                        if(currentActiveList.length === 0) {
-                            currentActiveList = [masterStationsDatabase[0]];
-                        }
-
-                        if (stationHeading) stationHeading.textContent = `Stations closest to ${locationName}`;
-                        if (stationSubheading) stationSubheading.textContent = `Showing only stations directly around you`;
-
-                        renderStations(currentActiveList);
-
-                        if (mapIframe) {
-                            mapIframe.src = `https://maps.google.com/maps?q=gas+station&sll=${lat},${lng}&z=15&output=embed`;
-                        }
-
-                        if (mapPreviewBg && embeddedMap && mapContainer) {
-                            mapPreviewBg.classList.add('hidden');
-                            embeddedMap.classList.remove('hidden');
-                            mapContainer.classList.remove('h-48');
-                            mapContainer.classList.add('h-96');
-                        }
-
-                        alert(`Location active! Displaying closest stations around ${locationName}.`);
-                    },
-                    (error) => {
-                        locationText.textContent = "Use my location";
-                        alert("Location access was denied or is unavailable.");
-                    },
-                    { timeout: 10000 }
-                );
-            } else {
-                alert("Geolocation is not supported by your browser.");
-            }
-        });
-    }
-
-
-    // ==========================================
-    // 6. EMBEDDED MAP TOGGLE
+    // 8. EMBEDDED MAP TOGGLE
     // ==========================================
     if (openMapBtn && mapContainer) {
         openMapBtn.addEventListener('click', () => {
@@ -393,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 7. MOBILE SIDEBAR & NOTIFICATIONS
+    // 9. MOBILE SIDEBAR & NOTIFICATIONS
     // ==========================================
     const menuBtn = document.getElementById('menu-btn');
     const sidebar = document.getElementById('sidebar');

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 0. LOAD USER PROFILE & CLEAN STATE FOR NEW USERS
+    // 0. LOAD USER PROFILE & INITIAL STATE
     // ==========================================
     const currentUserData = localStorage.getItem('fuelless_current_user');
     let userEmail = "default_user";
@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Load account state from localStorage
     const storageKey = `fuelless_account_${userEmail}`;
     let accountData = JSON.parse(localStorage.getItem(storageKey)) || {
         balance: 0.00,
@@ -47,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         purchases: []
     };
 
-    // Sync global wallet balance
     const globalWalletBalance = localStorage.getItem('fuelless_wallet_balance');
     if (globalWalletBalance !== null) {
         accountData.balance = parseFloat(globalWalletBalance);
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('fuelless_wallet_balance', accountData.balance);
     }
 
-    // Pull live purchase history from localStorage to compute real stats
     const storedPurchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
     
     let computedTotalLitres = 0;
@@ -63,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         computedTotalLitres += parseFloat(p.litres) || 0;
     });
     
-    // Save total litres back to storage so the profile modal can display it
     localStorage.setItem('fuelless_total_litres', computedTotalLitres.toFixed(1));
 
     const totalPurchasesCount = storedPurchases.length;
@@ -71,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 1. RENDER ACCOUNT STATE & CARDS DYNAMICALLY
+    // 1. RENDER ACCOUNT STATS & CARDS
     // ==========================================
     const walletBalanceEl = document.getElementById('wallet-balance');
     
@@ -100,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     slotMachineRollBalance(accountData.balance, 800);
 
-    // DYNAMIC ACTIVE FUEL PASS CARD
+    // Active Fuel Pass Card
     const activePassCard = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div:nth-child(2)');
     if (activePassCard) {
         if (storedPurchases.length > 0) {
@@ -147,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // DYNAMIC TIME SAVED CARD
+    // Time Saved Card
     const timeSavedCard = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div:nth-child(3)');
     if (timeSavedCard) {
         const hours = Math.floor(computedTimeSavedMins / 60);
@@ -164,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // DYNAMIC TOTAL FUEL BOUGHT CARD
+    // Total Fuel Card
     const totalFuelCard = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div:nth-child(4)');
     if (totalFuelCard) {
         totalFuelCard.innerHTML = `
@@ -179,50 +175,198 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // RECENT PURCHASES OVERVIEW WIDGET
-    const sections = document.querySelectorAll('section');
-    sections.forEach(sec => {
-        const h3 = sec.querySelector('h3');
-        if (h3 && h3.textContent.trim() === 'Recent purchases') {
-            const purchasesContainer = sec.querySelector('.bg-white');
-            if (purchasesContainer) {
-                if (storedPurchases.length > 0) {
-                    const latest = storedPurchases[0];
-                    purchasesContainer.innerHTML = `
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-emerald-50 text-emerald-800 rounded-xl flex items-center justify-center text-sm">
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-                            <div>
-                                <h5 class="text-sm font-semibold text-gray-900">${latest.station}</h5>
-                                <p class="text-[11px] text-gray-400">${latest.date} • PMS</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-6">
-                            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">
-                                Completed
-                            </span>
-                            <div class="text-right">
-                                <p class="text-sm font-bold text-gray-900">₦${Number(latest.totalPaid).toLocaleString()}</p>
-                                <p class="text-[11px] text-gray-400">${latest.litres} litres</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    purchasesContainer.innerHTML = `
-                        <div class="w-full text-center py-6 text-gray-400 text-xs">
-                            <i class="fa-solid fa-receipt text-lg mb-2 opacity-40"></i>
-                            <p>No recent purchases yet. Buy fuel to see your history here.</p>
-                        </div>
-                    `;
-                }
-            }
-        }
-    });
+
+    // ==========================================
+    // 2. DISTANCE CALCULATOR HELPER
+    // ==========================================
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 
 
     // ==========================================
-    // 2. VIEW HISTORY MODAL FUNCTIONALITY
+    // 3. REAL-TIME NOMINATIM GEOLOCATION FETCH (FIXED STATION NAMES & ADDRESSES)
+    // ==========================================
+    const locationTextEl = document.getElementById('user-location-text');
+    const stationsContainer = document.getElementById('nearby-stations-container');
+
+    const brandNames = ["Conoil", "TotalEnergies", "Total", "NNPC", "Mobil", "MRS", "Nipco", "Oando", "AP", "Ardova", "Enyo", "Rainoil", "Matrix"];
+
+    async function fetchLiveStations(lat, lng) {
+        if (locationTextEl) locationTextEl.textContent = "Detecting live stations near your device...";
+
+        try {
+            let areaName = "your location";
+            const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const revData = await revRes.json();
+            if (revData && revData.address) {
+                areaName = revData.address.suburb || revData.address.neighbourhood || revData.address.city_district || revData.address.city || "your location";
+            }
+
+            const delta = 0.045; // Approx 5km bound
+            const viewbox = `${lng-delta},${lat+delta},${lng+delta},${lat-delta}`;
+            const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=fuel+station&bounded=1&viewbox=${viewbox}&limit=12`;
+
+            const res = await fetch(searchUrl);
+            const data = await res.json();
+
+            let liveList = [];
+
+            if (data && data.length > 0) {
+                data.forEach((item, index) => {
+                    const itemLat = parseFloat(item.lat);
+                    const itemLon = parseFloat(item.lon);
+                    const dist = calculateDistance(lat, lng, itemLat, itemLon);
+
+                    if (dist <= 5.0) {
+                        const displayName = item.display_name || "";
+                        const parts = displayName.split(',');
+
+                        // Intelligent Station Name extraction
+                        let stationName = "";
+                        let matchedBrand = brandNames.find(b => displayName.toLowerCase().includes(b.toLowerCase()));
+                        
+                        if (matchedBrand) {
+                            stationName = `${matchedBrand} Filling Station`;
+                        } else if (parts.length > 0 && !parts[0].toLowerCase().includes('road') && !parts[0].toLowerCase().includes('expressway')) {
+                            stationName = parts[0].trim();
+                        } else {
+                            stationName = `Filling Station (${index + 1})`;
+                        }
+
+                        // Ensure clean address string
+                        let cleanAddress = parts.slice(1, 4).join(',').trim();
+                        if (!cleanAddress) {
+                            cleanAddress = `${areaName}, Lagos`;
+                        }
+
+                        liveList.push({
+                            name: stationName,
+                            address: cleanAddress,
+                            price: 875 + (index % 3) * 5,
+                            distanceKm: parseFloat(dist.toFixed(1)),
+                            queueStatus: index % 2 === 0 ? "Low queue" : "Moderate",
+                            queueColor: index % 2 === 0 ? "text-emerald-600" : "text-amber-600",
+                            dotColor: index % 2 === 0 ? "bg-emerald-500" : "bg-amber-500",
+                            waitTime: `${3 + (index * 2)} min`,
+                            colorClass: index % 3 === 0 ? "bg-yellow-600" : (index % 3 === 1 ? "bg-emerald-700" : "bg-orange-500")
+                        });
+                    }
+                });
+
+                liveList.sort((a, b) => a.distanceKm - b.distanceKm);
+            }
+
+            if (locationTextEl) {
+                locationTextEl.textContent = `Showing live stations within 5km of ${areaName}`;
+            }
+
+            renderOverviewStations(liveList.slice(0, 3));
+
+        } catch (err) {
+            console.error("Failed to fetch live location stations:", err);
+            if (locationTextEl) locationTextEl.textContent = "Location detection failed. Click 'Find fuel' to retry.";
+        }
+    }
+
+    function renderOverviewStations(stations) {
+        if (!stationsContainer) return;
+
+        if (stations.length === 0) {
+            stationsContainer.innerHTML = `
+                <div class="col-span-full py-8 text-center text-gray-400 text-xs bg-white rounded-2xl border border-gray-100">
+                    <i class="fa-solid fa-gas-pump text-xl mb-2 opacity-30"></i>
+                    <p>No fueling stations detected within 5km of your exact position.</p>
+                </div>
+            `;
+            return;
+        }
+
+        stationsContainer.innerHTML = '';
+
+        stations.forEach(station => {
+            const card = document.createElement('div');
+            card.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all";
+            
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 ${station.colorClass} rounded-xl flex items-center justify-center text-white">
+                            <i class="fa-solid fa-gas-pump text-base"></i>
+                        </div>
+                        <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 text-sm truncate">${station.name}</h4>
+                    <p class="text-[11px] text-gray-500 mb-4 line-clamp-2">
+                        <i class="fa-solid fa-location-dot text-[10px] mr-1 text-emerald-700"></i>${station.address}
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
+                        <div>
+                            <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
+                            <p class="text-sm font-bold text-gray-900">₦${station.price.toLocaleString()}<span class="text-[10px] text-gray-400 font-normal">/L</span></p>
+                        </div>
+                        <div class="border-l border-gray-200 pl-3">
+                            <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
+                            <p class="text-sm font-bold text-gray-900">${station.distanceKm} km</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
+                        <span class="flex items-center ${station.queueColor}">
+                            <span class="w-1.5 h-1.5 ${station.dotColor} rounded-full mr-1.5"></span> ${station.queueStatus}
+                        </span>
+                        <span class="flex items-center text-gray-400">
+                            <i class="fa-regular fa-clock mr-1"></i> ~ ${station.waitTime}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="buy-station-btn w-full bg-[#145337] hover:bg-[#09482d] text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors shadow-sm cursor-pointer">
+                    <span>Buy from this station</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </button>
+            `;
+
+            card.querySelector('.buy-station-btn').addEventListener('click', () => {
+                localStorage.setItem('fuelless_selected_station', JSON.stringify({
+                    name: station.name,
+                    address: station.address,
+                    price: station.price
+                }));
+                window.location.href = './buyfuelpage.html';
+            });
+
+            stationsContainer.appendChild(card);
+        });
+    }
+
+    // Trigger GPS on Overview load immediately
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                fetchLiveStations(position.coords.latitude, position.coords.longitude);
+            },
+            (err) => {
+                if (locationTextEl) locationTextEl.textContent = "Please enable GPS access to see live nearby stations.";
+            },
+            { timeout: 10000, enableHighAccuracy: true }
+        );
+    } else {
+        if (locationTextEl) locationTextEl.textContent = "Geolocation is not supported by your browser.";
+    }
+
+
+    // ==========================================
+    // 4. VIEW HISTORY MODAL
     // ==========================================
     const viewHistoryBtn = document.getElementById('view-history-btn');
     const historyModal = document.getElementById('history-modal');
@@ -232,7 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openHistoryModal() {
         if (!historyModal || !historyModalBody) return;
-
         const purchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
 
         if (purchases.length === 0) {
@@ -245,7 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         } else {
             let historyHTML = `<div class="space-y-3">`;
-
             purchases.forEach((p) => {
                 historyHTML += `
                     <div class="p-4 bg-gray-50/80 rounded-2xl border border-gray-100 flex items-center justify-between hover:bg-gray-100/60 transition">
@@ -276,11 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             });
-
             historyHTML += `</div>`;
             historyModalBody.innerHTML = historyHTML;
         }
-
         historyModal.classList.remove('hidden');
         historyModal.classList.add('flex');
     }
@@ -295,15 +435,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeHistoryModal) closeHistoryModal.addEventListener('click', hideHistoryModal);
     if (closeHistoryModalBtn) closeHistoryModalBtn.addEventListener('click', hideHistoryModal);
 
-    if (historyModal) {
-        historyModal.addEventListener('click', (e) => {
-            if (e.target === historyModal) hideHistoryModal();
-        });
-    }
-
 
     // ==========================================
-    // 3. PROFILE MODAL FUNCTIONALITY
+    // 5. PROFILE MODAL FUNCTIONALITY
     // ==========================================
     const profileBtn = document.getElementById("profile-nav-btn");
     const profileModal = document.getElementById("profile-modal");
@@ -346,115 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 4. REAL GEOLOCATION LOGIC
-    // ==========================================
-    const locationTextEl = document.getElementById('user-location-text');
-    const stationsContainer = document.getElementById('nearby-stations-container');
-
-    const localStationPools = {
-        onikan: [
-            { name: "Conoil Mega Station", address: "Obalende Road, Ikoyi/Obalende", price: 875, distance: "0.8 km", queueStatus: "Low queue", queueColor: "text-emerald-600", dotColor: "bg-emerald-500", eta: "~ 4 min", colorClass: "bg-orange-500" },
-            { name: "TotalEnergies", address: "Broad Street, Lagos Island", price: 880, distance: "1.2 km", queueStatus: "Moderate", queueColor: "text-amber-600", dotColor: "bg-amber-500", eta: "~ 7 min", colorClass: "bg-rose-600" },
-            { name: "MRS Oil Nigeria", address: "Campos Square, Ajele St", price: 875, distance: "1.6 km", queueStatus: "Low queue", queueColor: "text-emerald-600", dotColor: "bg-emerald-500", eta: "~ 5 min", colorClass: "bg-red-700" }
-        ]
-    };
-
-    function renderDynamicStations(stations, areaName) {
-        if (locationTextEl) {
-            locationTextEl.textContent = `Live availability around ${areaName}`;
-        }
-
-        if (!stationsContainer) return;
-        stationsContainer.innerHTML = '';
-
-        stations.forEach(station => {
-            const card = document.createElement('div');
-            card.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all";
-            
-            card.innerHTML = `
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 ${station.colorClass} rounded-xl flex items-center justify-center text-white">
-                            <i class="fa-solid fa-gas-pump text-base"></i>
-                        </div>
-                        <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">Open</span>
-                    </div>
-                    <h4 class="font-semibold text-gray-900 text-sm">${station.name}</h4>
-                    <p class="text-[11px] text-gray-400 mb-4">
-                        <i class="fa-solid fa-location-dot text-[10px] mr-1"></i>${station.address}
-                    </p>
-
-                    <div class="grid grid-cols-2 gap-2 bg-gray-50/60 p-3 rounded-xl mb-4">
-                        <div>
-                            <p class="text-[9px] text-gray-400 font-semibold uppercase">PMS Price</p>
-                            <p class="text-sm font-bold text-gray-900">₦${station.price.toLocaleString()}<span class="text-[10px] text-gray-400 font-normal">/L</span></p>
-                        </div>
-                        <div class="border-l border-gray-200 pl-3">
-                            <p class="text-[9px] text-gray-400 font-semibold uppercase">Distance</p>
-                            <p class="text-sm font-bold text-gray-900">${station.distance}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between text-[11px] text-gray-500 mb-4">
-                        <span class="flex items-center ${station.queueColor}">
-                            <span class="w-1.5 h-1.5 ${station.dotColor} rounded-full mr-1.5"></span> ${station.queueStatus}
-                        </span>
-                        <span class="flex items-center text-gray-400">
-                            <i class="fa-regular fa-clock mr-1"></i> ${station.eta}
-                        </span>
-                    </div>
-                </div>
-
-                <button class="buy-station-btn w-full bg-[#145337] hover:bg-[#09482d] text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors shadow-sm">
-                    <span>Buy from this station</span>
-                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                </button>
-            `;
-
-            const buyBtn = card.querySelector('.buy-station-btn');
-            buyBtn.addEventListener('click', () => {
-                localStorage.setItem('fuelless_selected_station', JSON.stringify({
-                    name: station.name,
-                    address: station.address,
-                    price: station.price
-                }));
-                window.location.href = './buyfuelpage.html';
-            });
-
-            stationsContainer.appendChild(card);
-        });
-    }
-
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-
-                try {
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                    const data = await response.json();
-                    
-                    const address = data.address || {};
-                    const area = address.suburb || address.neighbourhood || address.city_district || address.city || "your current location";
-
-                    renderDynamicStations(localStationPools.onikan, area);
-                } catch (err) {
-                    renderDynamicStations(localStationPools.onikan, "Onikan, Lagos Island");
-                }
-            },
-            () => {
-                renderDynamicStations(localStationPools.onikan, "Onikan, Lagos Island");
-            },
-            { timeout: 8000 }
-        );
-    } else {
-        renderDynamicStations(localStationPools.onikan, "Onikan, Lagos Island");
-    }
-
-
-    // ==========================================
-    // 5. SCROLL REVEAL OBSERVER
+    // 6. SCROLL REVEAL & ADD MONEY
     // ==========================================
     const observerOptions = { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0.15 };
     const revealObserver = new IntersectionObserver((entries) => {
@@ -468,64 +494,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-
-    // ==========================================
-    // 6. MOBILE SIDEBAR TOGGLE
-    // ==========================================
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-
-    if (menuBtn && sidebar) {
-        menuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-        });
-    }
-
-
-    // ==========================================
-    // 7. ADD MONEY WALLET FUNDING LOGIC
-    // ==========================================
     const addMoneyBtn = document.getElementById('add-money-btn');
-
     if (addMoneyBtn) {
         addMoneyBtn.addEventListener('click', () => {
             let inputAmount = prompt("Enter amount to add to your fuel wallet (e.g., 15000):", "15000");
-            
             if (inputAmount !== null) {
                 let addedValue = parseFloat(inputAmount);
-                
                 if (!isNaN(addedValue) && addedValue > 0) {
                     accountData.balance += addedValue;
                     localStorage.setItem('fuelless_wallet_balance', accountData.balance);
                     localStorage.setItem(storageKey, JSON.stringify(accountData));
-
                     slotMachineRollBalance(accountData.balance, 1400);
                 } else {
                     alert("Please enter a valid monetary amount.");
                 }
-            }
-        });
-    }
-
-
-    // ==========================================
-    // 8. NOTIFICATION BELL INTERACTION
-    // ==========================================
-    const bellBtn = document.getElementById('bell-btn');
-    const notifBadge = document.getElementById('notif-badge');
-    let unreadCount = 3;
-
-    if (bellBtn && notifBadge) {
-        bellBtn.addEventListener('click', () => {
-            if (unreadCount > 0) {
-                unreadCount = 0;
-                notifBadge.style.display = 'none';
-                alert("You have no new unread notifications.");
-            } else {
-                unreadCount = 3;
-                notifBadge.textContent = unreadCount;
-                notifBadge.style.display = 'flex';
-                alert("3 new notifications loaded.");
             }
         });
     }
