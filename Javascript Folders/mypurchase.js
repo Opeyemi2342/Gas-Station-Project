@@ -51,25 +51,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 1. LOAD LATEST PURCHASE OR MOCK DATA
+    // 1. CHECK FOR PURCHASES IN LOCALSTORAGE
     // ==========================================
     const storedPurchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
-    let activePassData;
+    const activePurchaseContainer = document.getElementById('active-purchase-container');
+    const noPurchasesContainer = document.getElementById('no-purchases-container');
 
-    if (storedPurchases.length > 0) {
-        activePassData = storedPurchases[0];
-    } else {
-        activePassData = {
-            station: "Nipco Energy, Lekki",
-            address: "11 Admiralty Way • Pump 1–6",
-            litres: "20.0",
-            totalPaid: "17600",
-            passCode: "FL-2682-7K9P",
-            date: "Today, 8:42 AM"
-        };
+    // IF NO PURCHASES EXIST: Hide pass, show clean empty state
+    if (storedPurchases.length === 0) {
+        if (activePurchaseContainer) activePurchaseContainer.classList.add('hidden');
+        if (noPurchasesContainer) noPurchasesContainer.classList.remove('hidden');
+        return; // Stop execution since there is no station/pass to display
     }
 
-    // Populate DOM Elements
+    // IF PURCHASES EXIST: Render the most recent purchase
+    if (activePurchaseContainer) activePurchaseContainer.classList.remove('hidden');
+    if (noPurchasesContainer) noPurchasesContainer.classList.add('hidden');
+
+    const activePassData = storedPurchases[0];
+
+    // Populate Main UI DOM Elements
     const stationNameEl = document.getElementById('pass-station-name');
     const stationAddressEl = document.getElementById('pass-station-address');
     const litresEl = document.getElementById('pass-litres');
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (amountEl) amountEl.textContent = `₦${Number(activePassData.totalPaid).toLocaleString()}`;
     if (passCodeEl) passCodeEl.textContent = activePassData.passCode || "FL-2682-7K9P";
 
-    // Export Modal Fields
+    // Populate Export Modal Fields
     const exportStationName = document.getElementById('export-station-name');
     const exportStationAddress = document.getElementById('export-station-address');
     const exportLitres = document.getElementById('export-litres');
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 2. GENERATE QR CODES
+    // 2. GENERATE QR CODES FOR ACTIVE PASS
     // ==========================================
     const qrContainer = document.getElementById('qrcode');
     const exportQrContainer = document.getElementById('export-qrcode');
@@ -129,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 3. TEST ATTENDANT SCAN & SAFE IMAGE DOWNLOAD
+    // 3. TEST ATTENDANT SCAN & IMAGE DOWNLOAD
     // ==========================================
     const testScanBtn = document.getElementById('test-scan-btn');
     if (testScanBtn) {
@@ -146,20 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadReceiptBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             
-            // Show modal invisibly/flexibly so html2canvas can capture it
             exportModal.style.display = 'flex';
             exportModal.style.opacity = '0';
 
             const exportCard = document.getElementById('export-card');
             
             try {
-                // Brief pause to let the QR code render fully in the export card
                 await new Promise(resolve => setTimeout(resolve, 200));
 
                 const canvas = await html2canvas(exportCard, {
                     scale: 2,
                     useCORS: true,
-                    allowTaint: false, // Ensures browser security policies don't crash the canvas
+                    allowTaint: false,
                     backgroundColor: "#ffffff",
                     logging: false
                 });
@@ -193,9 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 exportModal.style.display = 'none';
                 exportModal.style.opacity = '1';
                 console.error("Canvas Export Error:", err);
-                
-                // Fallback action if html2canvas gets blocked by browser security
-                alert("Direct image download was blocked by browser security restrictions. Don't worry—you can simply take a screenshot of your digital pass card on screen to save it!");
+                alert("Direct image download was blocked by browser security restrictions. Don't worry—you can take a screenshot of your digital pass on screen to save it!");
             }
         });
     }
