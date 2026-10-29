@@ -1,137 +1,203 @@
-document.addEventListener("DOMContentLoaded", () => {
-  
-  // ==========================================
-  // 1. POPULATE PURCHASE DATA FROM LOCALSTORAGE
-  // ==========================================
-  const purchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
-  const latestPurchase = purchases.length > 0 ? purchases[0] : null;
+document.addEventListener('DOMContentLoaded', () => {
 
-  const stationNameEl = document.getElementById("pass-station-name");
-  const stationAddressEl = document.getElementById("pass-station-address");
-  const litresEl = document.getElementById("pass-litres");
-  const amountEl = document.getElementById("pass-amount");
-  const passCodeTextEl = document.getElementById("pass-code-text");
+    // ==========================================
+    // 0. PROFILE MODAL FUNCTIONALITY & DATA SYNC
+    // ==========================================
+    const profileBtn = document.getElementById("profile-nav-btn");
+    const profileModal = document.getElementById("profile-modal");
+    const closeProfileModal = document.getElementById("close-profile-modal");
+    const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
+    const clearDataBtn = document.getElementById("clear-data-btn");
 
-  let uniquePassCode = latestPurchase && latestPurchase.passCode ? latestPurchase.passCode : `FL-${Math.floor(1000 + Math.random() * 9000)}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    if (profileBtn && profileModal) {
+        profileBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const currentWallet = localStorage.getItem("fuelless_wallet_balance") || "0.00";
+            const currentTotalFuel = localStorage.getItem("fuelless_total_litres") || "0";
 
-  if (latestPurchase) {
-    if (stationNameEl) stationNameEl.textContent = latestPurchase.station;
-    if (stationAddressEl) stationAddressEl.textContent = latestPurchase.address;
-    if (litresEl) litresEl.textContent = `${latestPurchase.litres} L`;
-    if (amountEl) amountEl.textContent = `₦${Number(latestPurchase.totalPaid).toLocaleString()}`;
+            const walletDisplay = document.getElementById("profile-wallet-display");
+            const fuelDisplay = document.getElementById("profile-fuel-display");
 
-    if (!latestPurchase.passCode) {
-      latestPurchase.passCode = uniquePassCode;
-      purchases[0] = latestPurchase;
-      localStorage.setItem('fuelless_purchases', JSON.stringify(purchases));
-    }
-  }
+            if (walletDisplay) {
+                walletDisplay.textContent = "₦" + parseFloat(currentWallet).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            if (fuelDisplay) {
+                fuelDisplay.textContent = currentTotalFuel + " L";
+            }
 
-  if (passCodeTextEl) passCodeTextEl.textContent = uniquePassCode;
-
-  // ==========================================
-  // 2. GENERATE REAL UNIQUE QR CODE
-  // ==========================================
-  const qrData = `FUELESS-PASS:${uniquePassCode}|Station:${latestPurchase ? latestPurchase.station : 'Conoil Mega Station'}|Litres:${latestPurchase ? latestPurchase.litres : '25.9'}|Paid:${latestPurchase ? latestPurchase.totalPaid : '22600'}`;
-
-  const qrcodeContainer = document.getElementById("qrcode");
-  if (qrcodeContainer) {
-    qrcodeContainer.innerHTML = ""; 
-    new QRCode(qrcodeContainer, {
-      text: qrData,
-      width: 150,
-      height: 150,
-      colorDark: "#073621",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
-  }
-
-  // ==========================================
-  // 3. DYNAMIC DATE & COUNTDOWN TIMER
-  // ==========================================
-  const countdownEl = document.getElementById("countdown-timer");
-  const validityTextEl = document.getElementById("validity-date-text");
-
-  const futureDate = new Date();
-  futureDate.setHours(futureDate.getHours() + 24);
-  const options = { weekday: 'short', month: 'short', day: 'numeric' };
-  const formattedDate = futureDate.toLocaleDateString('en-US', options);
-  const validityString = `${formattedDate}, 8:42 AM`;
-
-  if (validityTextEl) validityTextEl.textContent = validityString;
-
-  let totalSeconds = 23 * 3600 + 48 * 60 + 12;
-  setInterval(() => {
-    if (totalSeconds <= 0) return;
-    totalSeconds--;
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    if (countdownEl) countdownEl.textContent = `${hours}:${minutes}:${seconds} left`;
-  }, 1000);
-
-  // ==========================================
-  // 4. TEST ATTENDANT SCAN FUNCTIONALITY
-  // ==========================================
-  const testScanBtn = document.getElementById("test-scan-btn");
-  if (testScanBtn) {
-    testScanBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      testScanBtn.innerHTML = `<i class="fa-solid fa-check-circle text-base"></i><span>Pass Successfully Verified & Redeemed!</span>`;
-      testScanBtn.classList.remove("bg-[#145337]", "hover:bg-[#09482d]");
-      testScanBtn.classList.add("bg-emerald-600");
-      alert(`Scan Successful! Pass ${uniquePassCode} verified at ${latestPurchase ? latestPurchase.station : 'Conoil Mega Station'}.`);
-    });
-  }
-
-  // ==========================================
-  // 5. BULLETPROOF IMAGE DOWNLOAD (ZERO-FAIL)
-  // ==========================================
-  const downloadReceiptBtn = document.getElementById("download-receipt-btn");
-  const passCard = document.getElementById("fuel-pass-card");
-
-  if (downloadReceiptBtn && passCard) {
-    downloadReceiptBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const originalText = downloadReceiptBtn.innerHTML;
-      downloadReceiptBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i><span>Saving image...</span>`;
-
-      try {
-        // Convert internal canvas QR code to img tag if needed for html2canvas compatibility
-        const qrCanvas = qrcodeContainer.querySelector("canvas");
-        if (qrCanvas) {
-          const qrImg = qrcodeContainer.querySelector("img");
-          if (qrImg) qrImg.src = qrCanvas.toDataURL("image/png");
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 200));
-
-        const canvas = await html2canvas(passCard, {
-          scale: 3,
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          backgroundColor: "#ffffff"
+            profileModal.classList.remove("hidden");
+            profileModal.classList.add("flex");
         });
+    }
 
-        // Trigger direct browser PNG download
-        const imageURL = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = imageURL;
-        link.download = `Fuelless-Pass-${uniquePassCode}.png`;
+    const closeProfileModalFunc = () => {
+        if (profileModal) {
+            profileModal.classList.add("hidden");
+            profileModal.classList.remove("flex");
+        }
+    };
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    if (closeProfileModal) closeProfileModal.addEventListener("click", closeProfileModalFunc);
+    if (closeProfileModalBtn) closeProfileModalBtn.addEventListener("click", closeProfileModalFunc);
 
-      } catch (error) {
-        console.error("Image Export Error:", error);
-        alert("Image saved directly or please take a screenshot of your digital pass.");
-      } finally {
-        downloadReceiptBtn.innerHTML = originalText;
-      }
-    });
-  }
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to reset your local app data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    }
+
+
+    // ==========================================
+    // 1. LOAD LATEST PURCHASE OR MOCK DATA
+    // ==========================================
+    const storedPurchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
+    let activePassData;
+
+    if (storedPurchases.length > 0) {
+        activePassData = storedPurchases[0];
+    } else {
+        activePassData = {
+            station: "Nipco Energy, Lekki",
+            address: "11 Admiralty Way • Pump 1–6",
+            litres: "20.0",
+            totalPaid: "17600",
+            passCode: "FL-2682-7K9P",
+            date: "Today, 8:42 AM"
+        };
+    }
+
+    // Populate DOM Elements
+    const stationNameEl = document.getElementById('pass-station-name');
+    const stationAddressEl = document.getElementById('pass-station-address');
+    const litresEl = document.getElementById('pass-litres');
+    const amountEl = document.getElementById('pass-amount');
+    const passCodeEl = document.getElementById('pass-code-text');
+
+    if (stationNameEl) stationNameEl.textContent = activePassData.station;
+    if (stationAddressEl) stationAddressEl.textContent = activePassData.address;
+    if (litresEl) litresEl.textContent = `${activePassData.litres} L`;
+    if (amountEl) amountEl.textContent = `₦${Number(activePassData.totalPaid).toLocaleString()}`;
+    if (passCodeEl) passCodeEl.textContent = activePassData.passCode || "FL-2682-7K9P";
+
+    // Export Modal Fields
+    const exportStationName = document.getElementById('export-station-name');
+    const exportStationAddress = document.getElementById('export-station-address');
+    const exportLitres = document.getElementById('export-litres');
+    const exportAmount = document.getElementById('export-amount');
+    const exportPassCode = document.getElementById('export-pass-code');
+
+    if (exportStationName) exportStationName.textContent = activePassData.station;
+    if (exportStationAddress) exportStationAddress.textContent = activePassData.address;
+    if (exportLitres) exportLitres.textContent = `${activePassData.litres} L`;
+    if (exportAmount) exportAmount.textContent = `₦${Number(activePassData.totalPaid).toLocaleString()}`;
+    if (exportPassCode) exportPassCode.textContent = activePassData.passCode || "FL-2682-7K9P";
+
+
+    // ==========================================
+    // 2. GENERATE QR CODES
+    // ==========================================
+    const qrContainer = document.getElementById('qrcode');
+    const exportQrContainer = document.getElementById('export-qrcode');
+    const qrString = `FUELESS-PASS:${activePassData.passCode || 'FL-2682-7K9P'}|${activePassData.station}|${activePassData.litres}L`;
+
+    if (qrContainer) {
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, {
+            text: qrString,
+            width: 160,
+            height: 160,
+            colorDark: "#073621",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+    if (exportQrContainer) {
+        exportQrContainer.innerHTML = "";
+        new QRCode(exportQrContainer, {
+            text: qrString,
+            width: 150,
+            height: 150,
+            colorDark: "#073621",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+
+    // ==========================================
+    // 3. TEST ATTENDANT SCAN & SAFE IMAGE DOWNLOAD
+    // ==========================================
+    const testScanBtn = document.getElementById('test-scan-btn');
+    if (testScanBtn) {
+        testScanBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert(`[Attendant Scanner Simulation]\n\nPass Code: ${activePassData.passCode || 'FL-2682-7K9P'}\nStation: ${activePassData.station}\nLitres: ${activePassData.litres}L\nStatus: VERIFIED & READY FOR DISPENSE.`);
+        });
+    }
+
+    const downloadReceiptBtn = document.getElementById('download-receipt-btn');
+    const exportModal = document.getElementById('export-modal');
+
+    if (downloadReceiptBtn && exportModal) {
+        downloadReceiptBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            // Show modal invisibly/flexibly so html2canvas can capture it
+            exportModal.style.display = 'flex';
+            exportModal.style.opacity = '0';
+
+            const exportCard = document.getElementById('export-card');
+            
+            try {
+                // Brief pause to let the QR code render fully in the export card
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                const canvas = await html2canvas(exportCard, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false, // Ensures browser security policies don't crash the canvas
+                    backgroundColor: "#ffffff",
+                    logging: false
+                });
+
+                canvas.toBlob((blob) => {
+                    exportModal.style.display = 'none';
+                    exportModal.style.opacity = '1';
+
+                    if (!blob) {
+                        alert("Pass image generation failed. Please try again.");
+                        return;
+                    }
+
+                    const fileName = `Fuelless-Pass-${activePassData.passCode || 'FL-2682-7K9P'}.png`;
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 1000);
+
+                }, 'image/png');
+
+            } catch (err) {
+                exportModal.style.display = 'none';
+                exportModal.style.opacity = '1';
+                console.error("Canvas Export Error:", err);
+                
+                // Fallback action if html2canvas gets blocked by browser security
+                alert("Direct image download was blocked by browser security restrictions. Don't worry—you can simply take a screenshot of your digital pass card on screen to save it!");
+            }
+        });
+    }
 
 });

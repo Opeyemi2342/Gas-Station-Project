@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 
 <head>
     <meta charset="UTF-8">
@@ -11,199 +11,349 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
-<body class="bg-[#FAF9F5] font-sans text-gray-900 min-h-screen flex flex-col justify-between">
-    <!-- Top Navigation Header -->
-    <header class="px-8 py-6 flex items-center justify-between max-w-7xl mx-auto w-full">
-        <div class="flex items-center space-x-2 text-emerald-900 font-bold text-lg">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
-                    <i class="fa-solid fa-bolt text-yellow-300"></i>
-                </div>
-                <span class="text-xl font-bold">
-                    <span>Fuel</span><span class="text-green-700">less</span>
-                </span>
-            </div>
-        </div>
-        <a href="./welcomepage.html" class="text-sm font-semibold tracking-wider text-gray-700 hover:text-[#073621] flex items-center gap-2 transition-colors">
-            <span>Go to dashboard</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-        </a>
-    </header>
-
-    <!-- Main Content Container -->
-    <main class="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-3xl mx-auto w-full">
-        
-        <div class="reveal text-center mb-10">
-            <div class="w-14 h-14 rounded-full bg-[#145337] text-[#22c55e] flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <i class="fa-solid fa-check text-xl"></i>
-            </div>
-            <span class="text-xs font-bold tracking-widest text-[#073621] uppercase block mb-2">
-                Payment Successful
-            </span>
-            <h1 class="text-4xl lg:text-5xl font-normal text-gray-900 tracking-tight mb-3">
-                Your fuel is ready.
-            </h1>
-            <p class="text-sm text-gray-500 font-medium">
-                Show this pass to the attendant when you arrive.
-            </p>
-        </div>
-
-        <!-- Digital Fuel Pass Card -->
-        <div id="fuel-pass-card" class="reveal bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-8">
-            <div class="bg-[#145337] text-white px-6 py-4 flex items-center justify-between">
+<body class="bg-[#FAF9F5] font-sans text-gray-900 h-full m-0 p-0 overflow-hidden">
+    <div class="h-full w-full flex flex-col justify-between overflow-hidden relative">
+        <header
+            class="px-8 py-5 flex items-center justify-between w-full border-b border-gray-100 bg-white/50 backdrop-blur-sm shrink-0">
+            <div class="flex items-center space-x-2 text-emerald-900 font-bold text-lg">
                 <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center">
-                        <i class="fa-solid fa-bolt text-xs text-yellow-300"></i>
+                    <div class="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-yellow-300"></i>
                     </div>
-                    <span class="text-lg font-bold">
+                    <span class="text-xl font-bold">
                         <span>Fuel</span><span class="text-green-700">less</span>
                     </span>
                 </div>
-                <span class="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">
-                    Fuel Pass
-                </span>
             </div>
-
-            <div class="px-8 py-5 border-b border-gray-100 flex items-center gap-4">
-                <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-gas-pump text-base"></i>
-                </div>
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Redeem at</span>
-                    <h4 id="pass-station-name" class="text-sm font-bold text-gray-900">Nipco Energy, Lekki</h4>
-                    <p id="pass-station-address" class="text-xs text-gray-500">11 Admiralty Way • Pump 1–6</p>
-                </div>
-            </div>
-
-            <div class="p-8 flex flex-col items-center justify-center bg-white">
-                <div class="w-48 h-48 bg-gray-50 p-3 rounded-2xl border border-gray-100 flex items-center justify-center">
-                    <div id="qrcode" class="flex items-center justify-center"></div>
-                </div>
-                <span id="pass-code-text" class="text-[10px] font-mono font-bold tracking-widest text-gray-400 mt-4">
-                    FL-2682-7K9P
-                </span>
-            </div>
-
-            <div class="grid grid-cols-3 border-t border-b border-gray-100 py-4 text-center bg-gray-50/50 text-sm">
-                <div class="border-r border-gray-200/60">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Fuel Type</span>
-                    <span class="font-bold text-gray-900 text-base">PMS</span>
-                </div>
-                <div class="border-r border-gray-200/60">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Quantity</span>
-                    <span id="pass-litres" class="font-bold text-gray-900 text-base">20.0 L</span>
-                </div>
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Amount Paid</span>
-                    <span id="pass-amount" class="font-bold text-gray-900 text-base">&#8358;17,600</span>
-                </div>
-            </div>
-
-            <div class="px-8 py-4 bg-gray-50 flex items-center justify-between text-xs text-gray-600">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-regular fa-clock text-gray-400 text-sm"></i>
-                    <span>Valid until <strong id="validity-date-text" class="text-gray-900 font-semibold">Tomorrow, 8:42 AM</strong></span>
-                </div>
-                <span id="countdown-timer" class="text-xs font-bold text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full">
-                    23:48:12 left
-                </span>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="reveal flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mb-8">
-            <a href="#" id="test-scan-btn" class="w-full sm:flex-1 bg-[#145337] hover:bg-[#09482d] text-white text-sm font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md">
-                <i class="fa-solid fa-qrcode text-base"></i>
-                <span>Test attendant scan</span>
+            <a href="./welcomepage.html"
+                class="text-sm font-semibold tracking-wider text-gray-700 hover:text-[#073621] flex items-center gap-2 transition-colors">
+                <span>Go to dashboard</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
             </a>
-            <a href="#" id="download-receipt-btn" class="w-full sm:flex-1 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 text-sm font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-sm">
-                <i class="fa-solid fa-image text-sm text-emerald-700"></i>
-                <span>Save pass image</span>
-            </a>
-        </div>
+        </header>
 
-        <div class="reveal bg-white/90 border border-gray-200/60 rounded-2xl p-5 max-w-lg w-full flex items-start gap-4 shadow-sm">
-            <div class="w-8 h-8 rounded-full bg-emerald-100 text-[#073621] flex items-center justify-center shrink-0 mt-0.5">
-                <i class="fa-solid fa-location-dot text-sm"></i>
-            </div>
-            <div>
-                <h5 class="text-xs font-bold text-gray-900 mb-1">When you arrive</h5>
-                <p class="text-xs text-gray-500 leading-relaxed">
-                    Join the Fuelless express lane and show this QR pass. The attendant will scan it before dispensing.
+        <main class="flex-1 overflow-y-auto px-4 py-8 pb-28 max-w-3xl mx-auto w-full">
+
+            <div class="reveal text-center mb-10">
+                <div
+                    class="w-14 h-14 rounded-full bg-[#145337] text-[#22c55e] flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fa-solid fa-check text-xl"></i>
+                </div>
+                <span class="text-xs font-bold tracking-widest text-[#073621] uppercase block mb-2">
+                    Payment Successful
+                </span>
+                <h1 class="text-4xl lg:text-5xl font-normal text-gray-900 tracking-tight mb-3">
+                    Your fuel is ready.
+                </h1>
+                <p class="text-sm text-gray-500 font-medium">
+                    Show this pass to the attendant when you arrive.
                 </p>
             </div>
-        </div>
-    </main>
 
-    <!-- VISIBLE EXPORT MODAL OVERLAY (Used for capturing image cleanly) -->
-    <div id="export-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-        <div id="export-card" style="width: 480px; background-color: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-            
-            <div style="background: linear-gradient(135deg, #073621 0%, #145337 100%); color: #ffffff; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center;">
+            <div id="fuel-pass-card"
+                class="reveal bg-white w-full max-w-lg mx-auto rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-8">
+                <div class="bg-[#145337] text-white px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center">
+                            <i class="fa-solid fa-bolt text-xs text-yellow-300"></i>
+                        </div>
+                        <span class="text-lg font-bold">
+                            <span>Fuel</span><span class="text-green-700">less</span>
+                        </span>
+                    </div>
+                    <span class="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">
+                        Fuel Pass
+                    </span>
+                </div>
+
+                <div class="px-8 py-5 border-b border-gray-100 flex items-center gap-4">
+                    <div
+                        class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-gas-pump text-base"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Redeem
+                            at</span>
+                        <h4 id="pass-station-name" class="text-sm font-bold text-gray-900">Nipco Energy, Lekki</h4>
+                        <p id="pass-station-address" class="text-xs text-gray-500">11 Admiralty Way • Pump 1–6</p>
+                    </div>
+                </div>
+
+                <div class="p-8 flex flex-col items-center justify-center bg-white">
+                    <div
+                        class="w-48 h-48 bg-gray-50 p-3 rounded-2xl border border-gray-100 flex items-center justify-center">
+                        <div id="qrcode" class="flex items-center justify-center"></div>
+                    </div>
+                    <span id="pass-code-text"
+                        class="text-[10px] font-mono font-bold tracking-widest text-gray-400 mt-4">
+                        FL-2682-7K9P
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-3 border-t border-b border-gray-100 py-4 text-center bg-gray-50/50 text-sm">
+                    <div class="border-r border-gray-200/60">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Fuel
+                            Type</span>
+                        <span class="font-bold text-gray-900 text-base">PMS</span>
+                    </div>
+                    <div class="border-r border-gray-200/60">
+                        <span
+                            class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Quantity</span>
+                        <span id="pass-litres" class="font-bold text-gray-900 text-base">20.0 L</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Amount
+                            Paid</span>
+                        <span id="pass-amount" class="font-bold text-gray-900 text-base">&#8358;17,600</span>
+                    </div>
+                </div>
+
+                <div class="px-8 py-4 bg-gray-50 flex items-center justify-between text-xs text-gray-600">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-regular fa-clock text-gray-400 text-sm"></i>
+                        <span>Valid until <strong id="validity-date-text" class="text-gray-900 font-semibold">Tomorrow,
+                                8:42 AM</strong></span>
+                    </div>
+                    <span id="countdown-timer"
+                        class="text-xs font-bold text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full">
+                        23:48:12 left
+                    </span>
+                </div>
+            </div>
+
+            <div class="reveal flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mx-auto mb-8">
+                <a href="#" id="test-scan-btn"
+                    class="w-full sm:flex-1 bg-[#145337] hover:bg-[#09482d] text-white text-sm font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md">
+                    <i class="fa-solid fa-qrcode text-base"></i>
+                    <span>Test attendant scan</span>
+                </a>
+                <a href="#" id="download-receipt-btn"
+                    class="w-full sm:flex-1 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 text-sm font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-sm">
+                    <i class="fa-solid fa-image text-sm text-emerald-700"></i>
+                    <span>Save pass image</span>
+                </a>
+            </div>
+
+            <div
+                class="reveal bg-white/90 border border-gray-200/60 rounded-2xl p-5 max-w-lg mx-auto w-full flex items-start gap-4 shadow-sm mb-6">
+                <div
+                    class="w-8 h-8 rounded-full bg-emerald-100 text-[#073621] flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-location-dot text-sm"></i>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-gray-900 mb-1">When you arrive</h5>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Join the Fuelless express lane and show this QR pass. The attendant will scan it before
+                        dispensing.
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <nav
+            class="shrink-0 w-full bg-white border-t border-gray-200 px-6 py-3 flex items-center justify-between lg:hidden shadow-[0_-6px_25px_rgba(0,0,0,0.12)] z-50">
+            <a href="./welcomepage.html"
+                class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-700 text-[10px] font-medium gap-1 transition-colors">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span>Home</span>
+            </a>
+
+            <a href="./findfuelpage.html"
+                class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-700 text-[10px] font-medium gap-1 transition-colors">
+                <i class="fa-solid fa-gas-pump text-lg"></i>
+                <span>Stations</span>
+            </a>
+
+            <a href="./buyfuelpage.html"
+                class="relative -top-5 w-12 h-12 bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white hover:scale-105 active:scale-95 transition-all shrink-0">
+                <i class="fa-solid fa-bolt text-yellow-300 text-base"></i>
+            </a>
+
+            <a href="./mypurchase.html"
+                class="flex flex-col items-center justify-center text-[#145337] text-[10px] font-semibold gap-1 transition-colors">
+                <i class="fa-solid fa-receipt text-lg"></i>
+                <span>Purchases</span>
+            </a>
+
+            <a href="#" id="profile-nav-btn"
+                class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-700 text-[10px] font-medium gap-1 transition-colors">
+                <i class="fa-regular fa-user text-lg"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <div id="profile-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="px-6 py-5 bg-[#145337] text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-9 h-9 rounded-full bg-emerald-700 flex items-center justify-center text-yellow-300 font-bold text-sm">
+                        AO
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold">My Profile</h3>
+                        <p class="text-[11px] text-emerald-200">Account details & preferences</p>
+                    </div>
+                </div>
+                <button id="close-profile-modal"
+                    class="w-8 h-8 rounded-full bg-emerald-800/80 hover:bg-emerald-700 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 space-y-6">
+                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div
+                        class="w-14 h-14 bg-amber-200 text-amber-800 font-bold rounded-2xl flex items-center justify-center text-lg shadow-sm">
+                        AO
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900">Opeyemi Adegbesan</h4>
+                        <p class="text-xs text-gray-500">adegbesanopeyemi55@gmail.com</p>
+                        <span
+                            class="inline-block mt-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                            Verified Corps Member (Lagos)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 text-center">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block mb-1">Wallet
+                            Balance</span>
+                        <span id="profile-wallet-display" class="text-lg font-bold text-emerald-950">&#8358;0.00</span>
+                    </div>
+                    <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-center">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 block mb-1">Total
+                            Fuel Bought</span>
+                        <span id="profile-fuel-display" class="text-lg font-bold text-amber-900">0 L</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">App Settings</span>
+                    <div
+                        class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div class="flex items-center gap-3 text-xs font-semibold text-gray-700">
+                            <i class="fa-solid fa-location-dot text-emerald-700"></i>
+                            <span>Location Service</span>
+                        </div>
+                        <span class="text-xs text-emerald-700 font-bold">Active (Lagos)</span>
+                    </div>
+                    <div
+                        class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div class="flex items-center gap-3 text-xs font-semibold text-gray-700">
+                            <i class="fa-solid fa-shield-halved text-emerald-700"></i>
+                            <span>Security Encryption</span>
+                        </div>
+                        <span class="text-xs text-gray-500">Token Enabled</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs">
+                <button id="clear-data-btn" class="text-red-600 hover:text-red-700 font-semibold transition">
+                    Reset local data
+                </button>
+                <button id="close-profile-modal-btn"
+                    class="px-4 py-2 bg-[#145337] hover:bg-[#09482d] text-white rounded-xl font-semibold transition shadow-sm">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="export-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div id="export-card"
+            style="width: 480px; background-color: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+
+            <div
+                style="background: linear-gradient(135deg, #073621 0%, #145337 100%); color: #ffffff; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 36px; height: 36px; background-color: #15803d; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <div
+                        style="width: 36px; height: 36px; background-color: #15803d; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                         <span style="color: #fde047; font-size: 16px; font-weight: bold;">⚡</span>
                     </div>
                     <div>
-                        <span style="font-size: 20px; font-weight: bold; letter-spacing: -0.5px;">Fuel<span style="color: #4ade80;">less</span></span>
-                        <div style="font-size: 9px; color: #a7f3d0; text-transform: uppercase; letter-spacing: 1px;">Verified Digital Token</div>
+                        <span style="font-size: 20px; font-weight: bold; letter-spacing: -0.5px;">Fuel<span
+                                style="color: #4ade80;">less</span></span>
+                        <div style="font-size: 9px; color: #a7f3d0; text-transform: uppercase; letter-spacing: 1px;">
+                            Verified Digital Token</div>
                     </div>
                 </div>
-                <div style="background-color: rgba(20, 184, 166, 0.2); color: #6ee7b7; padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                <div
+                    style="background-color: rgba(20, 184, 166, 0.2); color: #6ee7b7; padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
                     APPROVED PASS
                 </div>
             </div>
 
-            <div style="padding: 24px 32px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 16px;">
-                <div style="width: 48px; height: 48px; background-color: #ffedd5; color: #ea580c; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+            <div
+                style="padding: 24px 32px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 16px;">
+                <div
+                    style="width: 48px; height: 48px; background-color: #ffedd5; color: #ea580c; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
                     ⛽
                 </div>
                 <div>
-                    <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">Redeem At Station</span>
-                    <h3 id="export-station-name" style="font-size: 15px; font-weight: bold; color: #0f172a; margin: 0;">Nipco Energy, Lekki</h3>
-                    <p id="export-station-address" style="font-size: 12px; color: #64748b; margin: 2px 0 0 0;">11 Admiralty Way • Pump 1–6</p>
+                    <span
+                        style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">Redeem
+                        At Station</span>
+                    <h3 id="export-station-name" style="font-size: 15px; font-weight: bold; color: #0f172a; margin: 0;">
+                        Nipco Energy, Lekki</h3>
+                    <p id="export-station-address" style="font-size: 12px; color: #64748b; margin: 2px 0 0 0;">11
+                        Admiralty Way • Pump 1–6</p>
                 </div>
             </div>
 
             <div style="padding: 28px; text-align: center; background-color: #ffffff;">
-                <div style="width: 180px; height: 180px; margin: 0 auto; background-color: #f8fafc; padding: 12px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                <div
+                    style="width: 180px; height: 180px; margin: 0 auto; background-color: #f8fafc; padding: 12px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
                     <div id="export-qrcode" style="display: flex; justify-content: center;"></div>
                 </div>
-                <div id="export-pass-code" style="font-family: monospace; font-size: 12px; font-weight: bold; color: #475569; margin-top: 16px; letter-spacing: 2px; background-color: #f1f5f9; display: inline-block; padding: 6px 16px; border-radius: 8px;">
+                <div id="export-pass-code"
+                    style="font-family: monospace; font-size: 12px; font-weight: bold; color: #475569; margin-top: 16px; letter-spacing: 2px; background-color: #f1f5f9; display: inline-block; padding: 6px 16px; border-radius: 8px;">
                     FL-2682-7K9P
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); background-color: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; text-align: center; padding: 18px 12px;">
+            <div
+                style="display: grid; grid-template-columns: repeat(3, 1fr); background-color: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; text-align: center; padding: 18px 12px;">
                 <div style="border-right: 1px solid #e2e8f0;">
-                    <span style="font-size: 9px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Fuel Type</span>
+                    <span
+                        style="font-size: 9px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Fuel
+                        Type</span>
                     <span style="font-size: 15px; font-weight: bold; color: #0f172a;">PMS</span>
                 </div>
                 <div style="border-right: 1px solid #e2e8f0;">
-                    <span style="font-size: 9px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Quantity</span>
+                    <span
+                        style="font-size: 9px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Quantity</span>
                     <span id="export-litres" style="font-size: 15px; font-weight: bold; color: #0f172a;">20.0 L</span>
                 </div>
                 <div>
-                    <span style="font-size: 9px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Amount Paid</span>
+                    <span
+                        style="font-size: 9px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Amount
+                        Paid</span>
                     <span id="export-amount" style="font-size: 15px; font-weight: bold; color: #0f172a;">₦17,600</span>
                 </div>
             </div>
 
-            <div style="padding: 20px 32px; background-color: #ffffff; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748b;">
+            <div
+                style="padding: 20px 32px; background-color: #ffffff; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748b;">
                 <div>
-                    <span>Valid until: <strong id="export-validity" style="color: #0f172a;">Tomorrow, 8:42 AM</strong></span>
+                    <span>Valid until: <strong id="export-validity" style="color: #0f172a;">Tomorrow, 8:42
+                            AM</strong></span>
                 </div>
-                <div style="color: #047857; font-weight: bold; background-color: #d1fae5; padding: 4px 10px; border-radius: 12px;">
+                <div
+                    style="color: #047857; font-weight: bold; background-color: #d1fae5; padding: 4px 10px; border-radius: 12px;">
                     Secured Pass
                 </div>
             </div>
 
         </div>
     </div>
-
-    <footer class="py-8 text-center text-xs text-gray-400">
-        &copy; 2025 Fuelless Technologies • Built in Lagos, Nigeria
-    </footer>
 
     <script src="./Javascript Folders/mypurchase.js"></script>
 </body>

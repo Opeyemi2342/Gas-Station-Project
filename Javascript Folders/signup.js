@@ -16,18 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Signup form submit handler with Local Storage persistence
+    // Signup form submit handler with Local Storage persistence & Duplicate Prevention
     if (signupForm) {
         signupForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
             const fullName = document.getElementById('fullname-input').value.trim();
             const phone = document.getElementById('phone-input').value.trim();
-            const email = document.getElementById('email-input').value.trim();
+            const email = document.getElementById('email-input').value.trim().toLowerCase();
 
             if (!fullName || !email) {
                 alert("Please fill in all required fields.");
                 return;
+            }
+
+            const storageKey = 'fuelless_users_' + email;
+
+            // Check if user already exists with this email address
+            if (localStorage.getItem(storageKey)) {
+                alert("An account with this email address already exists! Please use a different email or log in.");
+                return; // Stop execution to block duplicate signups
             }
 
             // Create user data object
@@ -38,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             // Save user profile and set active user session in Local Storage
-            localStorage.setItem('fuelless_users_' + email.toLowerCase(), JSON.stringify(userData));
+            localStorage.setItem(storageKey, JSON.stringify(userData));
             localStorage.setItem('fuelless_current_user', JSON.stringify(userData));
 
             alert(`Account created successfully! Welcome, ${fullName}.`);

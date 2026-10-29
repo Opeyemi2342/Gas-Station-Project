@@ -1,7 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // MASTER STATION DATABASE
+    // 0. PROFILE MODAL FUNCTIONALITY & DATA SYNC
+    // ==========================================
+    const profileBtn = document.getElementById("profile-nav-btn");
+    const profileModal = document.getElementById("profile-modal");
+    const closeProfileModal = document.getElementById("close-profile-modal");
+    const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
+    const clearDataBtn = document.getElementById("clear-data-btn");
+
+    if (profileBtn && profileModal) {
+        profileBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const currentWallet = localStorage.getItem("fuelless_wallet_balance") || "0.00";
+            const currentTotalFuel = localStorage.getItem("fuelless_total_litres") || "0";
+
+            const walletDisplay = document.getElementById("profile-wallet-display");
+            const fuelDisplay = document.getElementById("profile-fuel-display");
+
+            if (walletDisplay) {
+                walletDisplay.textContent = "₦" + parseFloat(currentWallet).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            if (fuelDisplay) {
+                fuelDisplay.textContent = currentTotalFuel + " L";
+            }
+
+            profileModal.classList.remove("hidden");
+            profileModal.classList.add("flex");
+        });
+    }
+
+    const closeProfileModalFunc = () => {
+        if (profileModal) {
+            profileModal.classList.add("hidden");
+            profileModal.classList.remove("flex");
+        }
+    };
+
+    if (closeProfileModal) closeProfileModal.addEventListener("click", closeProfileModalFunc);
+    if (closeProfileModalBtn) closeProfileModalBtn.addEventListener("click", closeProfileModalFunc);
+
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to reset your local app data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    }
+
+
+    // ==========================================
+    // 1. MASTER STATION DATABASE
     // ==========================================
     const masterStationsDatabase = [
         {
@@ -97,12 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const openMapBtn = document.getElementById('open-map-btn');
 
     // ==========================================
-    // FLICKER-FREE RENDER FUNCTION
+    // 2. FLICKER-FREE RENDER FUNCTION
     // ==========================================
     function renderStations(list) {
         if (!gridContainer) return;
 
-        // Use a document fragment to stage DOM changes off-screen before painting
         const fragment = document.createDocumentFragment();
 
         if (list.length === 0) {
@@ -125,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 : `<span class="bg-gray-100 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded-full">Nearby</span>`;
 
             const card = document.createElement('div');
-            // Styled cleanly with zero layout shift triggers
             card.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between";
             card.innerHTML = `
                 <div>
@@ -163,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </div>
                 </div>
-                <!-- Green button with dark green hover state -->
                 <button class="buy-station-btn w-full bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold hover:bg-emerald-950 flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm transition-colors duration-150"
                     data-station="${station.name}" data-price="${station.price}" data-address="${station.address}">
                     <span>Buy from this station</span>
@@ -173,11 +220,9 @@ document.addEventListener('DOMContentLoaded', () => {
             fragment.appendChild(card);
         });
 
-        // Perform a single atomic DOM insertion to eliminate re-paint flickering
         gridContainer.innerHTML = '';
         gridContainer.appendChild(fragment);
 
-        // Attach click handlers to buy buttons
         document.querySelectorAll('.buy-station-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -193,12 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial render
     renderStations(currentActiveList);
 
 
     // ==========================================
-    // REAL-TIME SEARCH
+    // 3. REAL-TIME SEARCH
     // ==========================================
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -237,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // FILTER CHIPS
+    // 4. FILTER CHIPS
     // ==========================================
     const filterChips = document.querySelectorAll('.filter-chip');
     filterChips.forEach(chip => {
@@ -269,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // GEOLOCATION & GPS ACTIVATION
+    // 5. GEOLOCATION & GPS ACTIVATION
     // ==========================================
     if (locationBtn && locationText) {
         locationBtn.addEventListener('click', () => {
@@ -336,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // EMBEDDED MAP TOGGLE
+    // 6. EMBEDDED MAP TOGGLE
     // ==========================================
     if (openMapBtn && mapContainer) {
         openMapBtn.addEventListener('click', () => {
@@ -349,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // MOBILE SIDEBAR & NOTIFICATIONS
+    // 7. MOBILE SIDEBAR & NOTIFICATIONS
     // ==========================================
     const menuBtn = document.getElementById('menu-btn');
     const sidebar = document.getElementById('sidebar');

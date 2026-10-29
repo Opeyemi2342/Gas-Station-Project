@@ -1,12 +1,66 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
+    // 0. PROFILE MODAL FUNCTIONALITY & DATA SYNC
+    // ==========================================
+    const profileBtn = document.getElementById("profile-nav-btn");
+    const profileModal = document.getElementById("profile-modal");
+    const closeProfileModal = document.getElementById("close-profile-modal");
+    const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
+    const clearDataBtn = document.getElementById("clear-data-btn");
+
+    if (profileBtn && profileModal) {
+        profileBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const currentWallet = localStorage.getItem("fuelless_wallet_balance") || "0.00";
+            const currentTotalFuel = localStorage.getItem("fuelless_total_litres") || "0";
+
+            const walletDisplay = document.getElementById("profile-wallet-display");
+            const fuelDisplay = document.getElementById("profile-fuel-display");
+
+            if (walletDisplay) {
+                walletDisplay.textContent = "₦" + parseFloat(currentWallet).toLocaleString('en-NG', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                });
+            }
+            if (fuelDisplay) {
+                fuelDisplay.textContent = currentTotalFuel + " L";
+            }
+
+            profileModal.classList.remove("hidden");
+            profileModal.classList.add("flex");
+        });
+    }
+
+    const closeProfileModalFunc = () => {
+        if (profileModal) {
+            profileModal.classList.add("hidden");
+            profileModal.classList.remove("flex");
+        }
+    };
+
+    if (closeProfileModal) closeProfileModal.addEventListener("click", closeProfileModalFunc);
+    if (closeProfileModalBtn) closeProfileModalBtn.addEventListener("click", closeProfileModalFunc);
+
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to reset your local app data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    }
+
+
+    // ==========================================
     // 1. RETRIEVE SELECTED STATION FROM LOCALSTORAGE
     // ==========================================
     const savedStation = JSON.parse(localStorage.getItem('fuelless_selected_station'));
     const stationNameEl = document.getElementById('station-name-display');
     const stationAddressEl = document.getElementById('station-address-display');
     const pricePerLitreEl = document.getElementById('price-per-litre-display');
+    const radioPriceDisplay = document.getElementById('radio-price-display');
 
     let pricePerLitre = 875;
     if (savedStation) {
@@ -15,17 +69,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedStation.price) {
             pricePerLitre = parseFloat(savedStation.price);
             if (pricePerLitreEl) pricePerLitreEl.textContent = pricePerLitre.toLocaleString();
+            if (radioPriceDisplay) radioPriceDisplay.textContent = pricePerLitre.toLocaleString();
         }
     }
 
+
     // ==========================================
-    // 2. RETRIEVE LIVE WALLET BALANCE FROM LOCALSTORAGE
+    // 2. RETRIEVE LIVE WALLET BALANCE
     // ==========================================
     const walletBalanceEl = document.getElementById('wallet-balance-display');
-    let currentWalletBalance = parseFloat(localStorage.getItem('fuelless_wallet_balance')) || 42850.00;
-    if (walletBalanceEl) {
-        walletBalanceEl.textContent = `₦${currentWalletBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    
+    // Checks for stored balance, falling back to 42,850.00 if brand new
+    let currentWalletBalance = parseFloat(localStorage.getItem('fuelless_wallet_balance'));
+    if (isNaN(currentWalletBalance)) {
+        currentWalletBalance = 42850.00;
+        localStorage.setItem('fuelless_wallet_balance', currentWalletBalance.toFixed(2));
     }
+    
+    if (walletBalanceEl) {
+        walletBalanceEl.textContent = `₦${currentWalletBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
 
     // ==========================================
     // 3. STATE VARIABLES & DOM ELEMENTS
@@ -49,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const payBtnText = document.getElementById('pay-btn-text');
     const payBtn = document.getElementById('pay-btn');
 
+
     // ==========================================
     // 4. CALCULATION & RENDERING LOGIC
     // ==========================================
@@ -56,22 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
         let subtotal = 0;
         if (mode === 'litres') {
             subtotal = currentValue * pricePerLitre;
-            inputValueDisplay.textContent = currentValue;
-            inputUnitDisplay.textContent = 'LITRES';
-            summaryMainValue.textContent = currentValue.toFixed(1);
-            summaryUnitLabel.textContent = 'LITRES';
+            if (inputValueDisplay) inputValueDisplay.textContent = currentValue;
+            if (inputUnitDisplay) inputUnitDisplay.textContent = 'LITRES';
+            if (summaryMainValue) summaryMainValue.textContent = currentValue.toFixed(1);
+            if (summaryUnitLabel) summaryUnitLabel.textContent = 'LITRES';
         } else {
             subtotal = currentValue; // currentValue represents Naira amount
-            inputValueDisplay.textContent = currentValue.toLocaleString();
-            inputUnitDisplay.textContent = 'NAIRA (₦)';
+            if (inputValueDisplay) inputValueDisplay.textContent = currentValue.toLocaleString();
+            if (inputUnitDisplay) inputUnitDisplay.textContent = 'NAIRA (₦)';
             const equivalentLitres = (currentValue / pricePerLitre).toFixed(1);
-            summaryMainValue.textContent = equivalentLitres;
-            summaryUnitLabel.textContent = 'LITRES EQUIVALENT';
+            if (summaryMainValue) summaryMainValue.textContent = equivalentLitres;
+            if (summaryUnitLabel) summaryUnitLabel.textContent = 'LITRES EQUIVALENT';
         }
 
         const total = subtotal + serviceFee;
-        summarySubtotal.textContent = `₦${subtotal.toLocaleString()}`;
-        summaryTotal.textContent = `₦${total.toLocaleString()}`;
+        if (summarySubtotal) summarySubtotal.textContent = `₦${subtotal.toLocaleString()}`;
+        if (summaryTotal) summaryTotal.textContent = `₦${total.toLocaleString()}`;
         if (payBtnText) {
             payBtnText.textContent = `Pay ₦${total.toLocaleString()}`;
         }
@@ -85,10 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const presets = [10, 20, 30, 50];
             presets.forEach(val => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 const isSelected = currentValue === val;
                 btn.className = isSelected 
-                    ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl"
-                    : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50";
+                    ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl transition"
+                    : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50 transition";
                 btn.textContent = `${val} L`;
                 btn.addEventListener('click', () => {
                     currentValue = val;
@@ -101,10 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const presets = [5000, 10000, 20000, 50000];
             presets.forEach(val => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 const isSelected = currentValue === val;
                 btn.className = isSelected 
-                    ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl"
-                    : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50";
+                    ? "quick-btn bg-emerald-50 border border-emerald-800 text-emerald-900 text-xs font-semibold py-2 rounded-xl transition"
+                    : "quick-btn border border-gray-200 text-gray-600 text-xs font-medium py-2 rounded-xl hover:bg-gray-50 transition";
                 btn.textContent = `₦${val.toLocaleString()}`;
                 btn.addEventListener('click', () => {
                     currentValue = val;
@@ -115,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
 
     // ==========================================
     // 5. EVENT LISTENERS
@@ -161,28 +229,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Payment / Checkout Action
+    // Payment / Checkout Action & Wallet Deduction
     if (payBtn) {
-        payBtn.addEventListener('click', () => {
+        payBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
             let subtotal = mode === 'litres' ? currentValue * pricePerLitre : currentValue;
             let finalTotal = subtotal + serviceFee;
+            let purchasedLitres = mode === 'litres' ? currentValue : (currentValue / pricePerLitre);
 
             if (currentWalletBalance < finalTotal) {
                 alert("Insufficient wallet balance! Please fund your wallet from the overview page.");
                 return;
             }
 
-            // Deduct balance and update localStorage
+            // Deduct balance and update localStorage keys for overview sync
             currentWalletBalance -= finalTotal;
-            localStorage.setItem('fuelless_wallet_balance', currentWalletBalance);
+            localStorage.setItem('fuelless_wallet_balance', currentWalletBalance.toFixed(2));
+
+            // Track total litres bought for profile stats
+            let totalLitresBought = parseFloat(localStorage.getItem('fuelless_total_litres')) || 0;
+            localStorage.setItem('fuelless_total_litres', (totalLitresBought + purchasedLitres).toFixed(1));
+
+            // Generate Pass Code
+            const randomCode = 'FL-' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 
             // Save purchase record for My Purchases page
             const purchaseRecord = {
-                station: savedStation ? savedStation.name : "Nipco Energy",
-                address: savedStation ? savedStation.address : "11 Admiralty Way, Lekki",
-                litres: mode === 'litres' ? currentValue : (currentValue / pricePerLitre).toFixed(1),
+                station: savedStation ? savedStation.name : "TotalEnergies",
+                address: savedStation ? savedStation.address : "Chisco, Lekki-Epe Exp.",
+                litres: purchasedLitres.toFixed(1),
                 totalPaid: finalTotal,
-                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                passCode: randomCode,
+                date: "Today, " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 status: 'Completed'
             };
 
@@ -190,39 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
             existingPurchases.unshift(purchaseRecord);
             localStorage.setItem('fuelless_purchases', JSON.stringify(existingPurchases));
 
-            alert(`Payment of ₦${finalTotal.toLocaleString()} successful! Your fuel order has been placed.`);
+            alert(`Payment of ₦${finalTotal.toLocaleString()} successful! Directing to your digital Fuel Pass...`);
             window.location.href = './mypurchase.html';
         });
     }
-
-    // ==========================================
-    // 6. MOBILE SIDEBAR / HAMBURGER TOGGLE LOGIC
-    // ==========================================
-    const menuBtn = document.getElementById('menu-btn');
-    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-    const sidebar = document.getElementById('sidebar');
-
-    if (menuBtn && sidebar) {
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('-translate-x-full');
-        });
-    }
-
-    if (closeSidebarBtn && sidebar) {
-        closeSidebarBtn.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-        });
-    }
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', (e) => {
-        if (sidebar && !sidebar.classList.contains('-translate-x-full') && menuBtn) {
-            if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-                sidebar.classList.add('-translate-x-full');
-            }
-        }
-    });
 
     // Initial Initialization
     renderQuickButtons();
