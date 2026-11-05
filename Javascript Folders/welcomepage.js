@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('fuelless_total_litres', computedTotalLitres.toFixed(1));
 
     const totalPurchasesCount = storedPurchases.length;
-    const computedTimeSavedMins = totalPurchasesCount * 30;
+    const computedTimeSavedMins = totalPurchasesCount * 30; // ~30 mins saved per successful queue-bypassed purchase
 
 
     // ==========================================
@@ -274,7 +274,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 3. DISTANCE CALCULATOR HELPER
+    // 3. RENDER RECENT PURCHASES ON OVERVIEW
+    // ==========================================
+    function renderRecentPurchasesWidget() {
+        const containerBox = document.querySelector('section.reveal:last-of-type div.bg-white, section:last-of-type div.bg-white, .flex-1.min-h-32.bg-white');
+        if (!containerBox) return;
+
+        if (storedPurchases.length === 0) {
+            containerBox.innerHTML = `
+                <div class="w-full text-center py-6 text-gray-400 text-xs">
+                    <i class="fa-solid fa-receipt text-lg mb-2 opacity-40"></i>
+                    <p>No recent purchases yet. Buy fuel to see your history here.</p>
+                </div>
+            `;
+        } else {
+            const recentSlice = storedPurchases.slice(0, 2);
+            let htmlList = `<div class="w-full space-y-2.5 p-2">`;
+
+            recentSlice.forEach(p => {
+                htmlList += `
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-[#145337] flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-gas-pump text-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h5 class="font-bold text-gray-900 truncate">${p.station}</h5>
+                                <p class="text-[10px] text-gray-500 truncate">${p.litres}L • <span class="font-mono">${p.passCode || 'FL-PASS'}</span></p>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="font-bold text-gray-900 block">&#8358;${Number(p.totalPaid).toLocaleString()}</span>
+                            <span class="text-[9px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full inline-block">Completed</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlList += `</div>`;
+            containerBox.className = "w-full bg-white p-2 rounded-2xl border border-gray-100 shadow-sm";
+            containerBox.innerHTML = htmlList;
+        }
+    }
+
+    renderRecentPurchasesWidget();
+
+
+    // ==========================================
+    // 4. DISTANCE CALCULATOR HELPER
     // ==========================================
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371; 
@@ -290,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 4. REAL-TIME GEOLOCATION FETCH (NIGERIA / AGO-IWOYE)
+    // 5. REAL-TIME GEOLOCATION FETCH (NIGERIA)
     // ==========================================
     const locationTextEl = document.getElementById('user-location-text');
     const stationsContainer = document.getElementById('nearby-stations-container');
@@ -435,7 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Trigger GPS on Overview load. Defaults to Ago-Iwoye, Ogun State (lat: 6.9167, lon: 3.9167) if GPS is denied/unavailable
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -452,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 5. VIEW HISTORY MODAL
+    // 6. VIEW HISTORY MODAL
     // ==========================================
     const viewHistoryBtn = document.getElementById('view-history-btn');
     const historyModal = document.getElementById('history-modal');
@@ -523,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 6. PROFILE MODAL FUNCTIONALITY
+    // 7. PROFILE MODAL FUNCTIONALITY
     // ==========================================
     const profileBtn = document.getElementById("profile-nav-btn");
     const profileModal = document.getElementById("profile-modal");
@@ -566,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 7. SCROLL REVEAL & ADD MONEY
+    // 8. SCROLL REVEAL & ADD MONEY
     // ==========================================
     const observerOptions = { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0.15 };
     const revealObserver = new IntersectionObserver((entries) => {
@@ -592,7 +638,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem(storageKey, JSON.stringify(accountData));
                     slotMachineRollBalance(accountData.balance, 1400);
 
-                    // Push notification for wallet funding
                     let currentNotifs = JSON.parse(localStorage.getItem("fuelless_notifications") || "[]");
                     currentNotifs.unshift({
                         id: Date.now(),
