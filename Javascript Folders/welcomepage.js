@@ -63,11 +63,108 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('fuelless_total_litres', computedTotalLitres.toFixed(1));
 
     const totalPurchasesCount = storedPurchases.length;
-    const computedTimeSavedMins = totalPurchasesCount * 13;
+    const computedTimeSavedMins = totalPurchasesCount * 30;
 
 
     // ==========================================
-    // 1. RENDER ACCOUNT STATS & CARDS
+    // 1. DYNAMIC NOTIFICATION SYSTEM & 9+ BADGE
+    // ==========================================
+    const bellBtn = document.getElementById("bell-btn");
+    const notifBadge = document.getElementById("notif-badge");
+    const notifDropdown = document.getElementById("notif-dropdown");
+
+    let notifications = JSON.parse(localStorage.getItem("fuelless_notifications") || "[]");
+
+    if (notifications.length === 0) {
+        notifications = [
+            { id: 1, title: "Welcome to Fuelless", desc: "Account successfully initialized for Nigeria.", time: "Just now", read: false },
+            { id: 2, title: "Location Active", desc: "GPS mapping enabled for Ogun State & nationwide.", time: "1h ago", read: false },
+            { id: 3, title: "Security Token", desc: "Wallet encryption active and verified.", time: "2h ago", read: false }
+        ];
+        localStorage.setItem("fuelless_notifications", JSON.stringify(notifications));
+    }
+
+    if (storedPurchases.length > 0) {
+        const latestPurchase = storedPurchases[0];
+        const notifIdTag = `purchase_${latestPurchase.passCode}`;
+        const alreadyLogged = notifications.some(n => n.tag === notifIdTag);
+        
+        if (!alreadyLogged) {
+            notifications.unshift({
+                id: Date.now(),
+                tag: notifIdTag,
+                title: "Fuel Pass Generated ⚡",
+                desc: `Successfully purchased ${latestPurchase.litres}L PMS from ${latestPurchase.station}.`,
+                time: "Just now",
+                read: false
+            });
+            localStorage.setItem("fuelless_notifications", JSON.stringify(notifications));
+        }
+    }
+
+    function updateNotificationUI() {
+        const unreadCount = notifications.filter(n => !n.read).length;
+        if (notifBadge) {
+            if (unreadCount > 0) {
+                notifBadge.style.display = "flex";
+                notifBadge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+            } else {
+                notifBadge.style.display = "none";
+            }
+        }
+    }
+
+    updateNotificationUI();
+
+    function renderNotificationItems() {
+        const listContainer = document.getElementById("notif-list");
+        if (!listContainer) return;
+        listContainer.innerHTML = "";
+
+        if (notifications.length === 0) {
+            listContainer.innerHTML = `<div class="p-6 text-center text-xs text-gray-400">No notifications yet.</div>`;
+            return;
+        }
+
+        notifications.forEach(n => {
+            const item = document.createElement("div");
+            item.className = `p-4 text-xs transition hover:bg-gray-50 ${n.read ? 'opacity-70' : 'bg-emerald-50/40 font-semibold'}`;
+            item.innerHTML = `
+                <div class="flex justify-between items-start mb-1">
+                    <span class="text-gray-900 font-bold">${n.title}</span>
+                    <span class="text-[9px] text-gray-400">${n.time}</span>
+                </div>
+                <p class="text-gray-600 font-normal leading-relaxed">${n.desc}</p>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    if (bellBtn && notifDropdown) {
+        bellBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            renderNotificationItems();
+            notifDropdown.classList.toggle("hidden");
+        });
+    }
+
+    document.addEventListener("click", (e) => {
+        if (notifDropdown && !notifDropdown.contains(e.target) && !bellBtn?.contains(e.target)) {
+            notifDropdown.classList.add("hidden");
+        }
+    });
+
+    const markAllReadBtn = document.getElementById("mark-all-read");
+    markAllReadBtn?.addEventListener("click", () => {
+        notifications.forEach(n => n.read = true);
+        localStorage.setItem("fuelless_notifications", JSON.stringify(notifications));
+        updateNotificationUI();
+        renderNotificationItems();
+    });
+
+
+    // ==========================================
+    // 2. RENDER ACCOUNT STATS & CARDS
     // ==========================================
     const walletBalanceEl = document.getElementById('wallet-balance');
     
@@ -96,38 +193,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     slotMachineRollBalance(accountData.balance, 800);
 
-    // Active Fuel Pass Card
-    const activePassCard = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div:nth-child(2)');
-    if (activePassCard) {
+    // Active Fuel Pass Widget
+    const activePassCardWidget = document.getElementById('active-pass-widget-container');
+    if (activePassCardWidget) {
         if (storedPurchases.length > 0) {
             const latest = storedPurchases[0];
-            activePassCard.innerHTML = `
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span class="font-medium text-gray-500 uppercase tracking-wider text-[10px]">Active Fuel Pass</span>
-                    </div>
-                    <a href="./mypurchase.html" class="text-emerald-800 font-semibold hover:underline text-[11px]">View pass &rarr;</a>
-                </div>
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="flex items-baseline space-x-1">
-                            <span class="text-2xl font-bold text-gray-900">${latest.litres}</span>
-                            <span class="text-[10px] text-gray-400 font-medium">LITRES</span>
+            const expiryTime = Number(latest.expiresAt) || (Date.now() + 86400000);
+            const isExpired = Date.now() >= expiryTime;
+
+            if (!isExpired) {
+                activePassCardWidget.className = "bg-gradient-to-br from-[#145337] to-[#09482d] text-white p-5 rounded-2xl shadow-sm flex flex-col justify-between min-h-44 relative overflow-hidden";
+                activePassCardWidget.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="font-bold text-emerald-200 uppercase tracking-wider text-[10px]">Active Fuel Pass</span>
                         </div>
-                        <p class="text-[11px] text-gray-400 mb-2">Premium Motor Spirit (PMS)</p>
-                        <div class="flex items-center space-x-1 text-[11px] text-gray-700 font-medium">
-                            <i class="fa-solid fa-gas-pump text-[10px] text-emerald-700"></i>
-                            <span class="truncate max-w-[140px]">${latest.station}</span>
+                        <a href="./mypurchase.html" class="text-lime-300 font-semibold hover:underline text-[11px]">View pass &rarr;</a>
+                    </div>
+                    <div class="py-1">
+                        <div class="flex items-baseline space-x-1 mb-0.5">
+                            <span class="text-2xl font-bold text-white">${latest.litres}</span>
+                            <span class="text-[10px] text-emerald-300 font-medium">LITRES</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-100 mb-2 truncate">📍 ${latest.station}</p>
+                        <span class="inline-block bg-emerald-800/80 text-yellow-300 font-mono text-[10px] px-2 py-0.5 rounded border border-emerald-700">Code: ${latest.passCode || 'FL-PASS'}</span>
+                    </div>
+                    <div></div>
+                `;
+            } else {
+                activePassCardWidget.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between min-h-44";
+                activePassCardWidget.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                            <span class="font-medium text-red-500 uppercase tracking-wider text-[10px]">Pass Expired</span>
                         </div>
                     </div>
-                    <div class="w-12 h-12 bg-emerald-900 rounded-xl flex items-center justify-center text-white text-lg shadow-sm">
-                        <i class="fa-solid fa-qrcode"></i>
+                    <div class="py-2">
+                        <p class="text-sm font-semibold text-gray-700 mb-1">Your pass has expired</p>
+                        <p class="text-[11px] text-gray-400">Buy fuel again to generate a new active queue pass.</p>
                     </div>
-                </div>
-            `;
+                    <div></div>
+                `;
+            }
         } else {
-            activePassCard.innerHTML = `
+            activePassCardWidget.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between min-h-44";
+            activePassCardWidget.innerHTML = `
                 <div class="flex items-center justify-between text-xs">
                     <div class="flex items-center space-x-1.5">
                         <span class="w-2 h-2 rounded-full bg-gray-300"></span>
@@ -144,40 +256,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Time Saved Card
-    const timeSavedCard = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div:nth-child(3)');
-    if (timeSavedCard) {
+    const timeSavedDisplay = document.getElementById('time-saved-display');
+    const timeSavedCardParent = timeSavedDisplay ? timeSavedDisplay.closest('.bg-white') : null;
+    if (timeSavedCardParent) {
         const hours = Math.floor(computedTimeSavedMins / 60);
         const mins = computedTimeSavedMins % 60;
-        timeSavedCard.innerHTML = `
-            <div class="w-8 h-8 bg-emerald-50 text-emerald-800 rounded-full flex items-center justify-center text-xs">
-                <i class="fa-regular fa-clock"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Time Saved</p>
-                <h3 class="text-2xl font-bold text-gray-900">${hours}h ${mins}m</h3>
-                <p class="text-[11px] text-gray-400">across ${totalPurchasesCount} purchase${totalPurchasesCount === 1 ? '' : 's'}</p>
-            </div>
-        `;
+        timeSavedDisplay.textContent = `${hours}h ${mins}m`;
+        const subText = timeSavedCardParent.querySelector('p.text-\\[11px\\]');
+        if (subText) subText.textContent = `across ${totalPurchasesCount} purchase${totalPurchasesCount === 1 ? '' : 's'}`;
     }
 
     // Total Fuel Card
-    const totalFuelCard = document.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div:nth-child(4)');
-    if (totalFuelCard) {
-        totalFuelCard.innerHTML = `
-            <div class="w-8 h-8 bg-amber-50 text-amber-700 rounded-lg flex items-center justify-center text-xs">
-                <i class="fa-solid fa-gas-pump"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Fuel Bought</p>
-                <h3 class="text-2xl font-bold text-gray-900">${computedTotalLitres.toFixed(1)} L</h3>
-                <p class="text-[11px] text-gray-400">Account activity summary</p>
-            </div>
-        `;
+    const totalFuelDisplay = document.getElementById('total-fuel-bought-display');
+    if (totalFuelDisplay) {
+        totalFuelDisplay.textContent = `${computedTotalLitres.toFixed(1)} L`;
     }
 
 
     // ==========================================
-    // 2. DISTANCE CALCULATOR HELPER
+    // 3. DISTANCE CALCULATOR HELPER
     // ==========================================
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371; 
@@ -193,12 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 3. REAL-TIME NOMINATIM GEOLOCATION FETCH (FIXED STATION NAMES & ADDRESSES)
+    // 4. REAL-TIME GEOLOCATION FETCH (NIGERIA / AGO-IWOYE)
     // ==========================================
     const locationTextEl = document.getElementById('user-location-text');
     const stationsContainer = document.getElementById('nearby-stations-container');
 
-    const brandNames = ["Conoil", "TotalEnergies", "Total", "NNPC", "Mobil", "MRS", "Nipco", "Oando", "AP", "Ardova", "Enyo", "Rainoil", "Matrix"];
+    const brandNames = ["Conoil", "TotalEnergies", "Total", "NNPC", "Mobil", "MRS", "Nipco", "Oando", "AP", "Ardova", "Enyo", "Rainoil", "Matrix", "Rano"];
 
     async function fetchLiveStations(lat, lng) {
         if (locationTextEl) locationTextEl.textContent = "Detecting live stations near your device...";
@@ -208,50 +305,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
             const revData = await revRes.json();
             if (revData && revData.address) {
-                areaName = revData.address.suburb || revData.address.neighbourhood || revData.address.city_district || revData.address.city || "your location";
+                areaName = revData.address.town || revData.address.suburb || revData.address.city || revData.address.county || "your location";
             }
 
-            const delta = 0.045; // Approx 5km bound
-            const viewbox = `${lng-delta},${lat+delta},${lng+delta},${lat-delta}`;
-            const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=fuel+station&bounded=1&viewbox=${viewbox}&limit=12`;
+            const radius = 6000;
+            const overpassQuery = `[out:json];node["amenity"="fuel"](around:${radius},${lat},${lng});out;`;
+            const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
 
-            const res = await fetch(searchUrl);
-            const data = await res.json();
+            const response = await fetch(url);
+            const data = await response.json();
 
             let liveList = [];
 
-            if (data && data.length > 0) {
-                data.forEach((item, index) => {
-                    const itemLat = parseFloat(item.lat);
-                    const itemLon = parseFloat(item.lon);
+            if (data && data.elements && data.elements.length > 0) {
+                data.elements.forEach((el, index) => {
+                    const itemLat = parseFloat(el.lat);
+                    const itemLon = parseFloat(el.lon);
                     const dist = calculateDistance(lat, lng, itemLat, itemLon);
 
-                    if (dist <= 5.0) {
-                        const displayName = item.display_name || "";
-                        const parts = displayName.split(',');
-
-                        // Intelligent Station Name extraction
-                        let stationName = "";
-                        let matchedBrand = brandNames.find(b => displayName.toLowerCase().includes(b.toLowerCase()));
+                    if (dist <= 6.0) {
+                        const rawName = el.tags.name || el.tags.brand || el.tags.operator || `Fuel Station #${index + 1}`;
+                        let stationName = rawName;
+                        let matchedBrand = brandNames.find(b => rawName.toLowerCase().includes(b.toLowerCase()));
                         
-                        if (matchedBrand) {
+                        if (matchedBrand && !rawName.toLowerCase().includes("filling station")) {
                             stationName = `${matchedBrand} Filling Station`;
-                        } else if (parts.length > 0 && !parts[0].toLowerCase().includes('road') && !parts[0].toLowerCase().includes('expressway')) {
-                            stationName = parts[0].trim();
-                        } else {
-                            stationName = `Filling Station (${index + 1})`;
                         }
 
-                        // Ensure clean address string
-                        let cleanAddress = parts.slice(1, 4).join(',').trim();
-                        if (!cleanAddress) {
-                            cleanAddress = `${areaName}, Lagos`;
-                        }
+                        let cleanAddress = el.tags["addr:street"] ? `${el.tags["addr:street"]}, ${areaName}, Nigeria` : `${areaName}, Nigeria`;
 
                         liveList.push({
                             name: stationName,
                             address: cleanAddress,
-                            price: 875 + (index % 3) * 5,
+                            price: 865 + (index % 3) * 10,
                             distanceKm: parseFloat(dist.toFixed(1)),
                             queueStatus: index % 2 === 0 ? "Low queue" : "Moderate",
                             queueColor: index % 2 === 0 ? "text-emerald-600" : "text-amber-600",
@@ -266,14 +352,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (locationTextEl) {
-                locationTextEl.textContent = `Showing live stations within 5km of ${areaName}`;
+                locationTextEl.textContent = `Showing live stations within 6km of ${areaName}`;
             }
 
             renderOverviewStations(liveList.slice(0, 3));
 
         } catch (err) {
             console.error("Failed to fetch live location stations:", err);
-            if (locationTextEl) locationTextEl.textContent = "Location detection failed. Click 'Find fuel' to retry.";
+            if (locationTextEl) locationTextEl.textContent = "Location detection failed. Showing default stations.";
         }
     }
 
@@ -284,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stationsContainer.innerHTML = `
                 <div class="col-span-full py-8 text-center text-gray-400 text-xs bg-white rounded-2xl border border-gray-100">
                     <i class="fa-solid fa-gas-pump text-xl mb-2 opacity-30"></i>
-                    <p>No fueling stations detected within 5km of your exact position.</p>
+                    <p>No fueling stations detected within 6km of your exact position.</p>
                 </div>
             `;
             return;
@@ -349,24 +435,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Trigger GPS on Overview load immediately
+    // Trigger GPS on Overview load. Defaults to Ago-Iwoye, Ogun State (lat: 6.9167, lon: 3.9167) if GPS is denied/unavailable
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 fetchLiveStations(position.coords.latitude, position.coords.longitude);
             },
             (err) => {
-                if (locationTextEl) locationTextEl.textContent = "Please enable GPS access to see live nearby stations.";
+                fetchLiveStations(6.9167, 3.9167);
             },
-            { timeout: 10000, enableHighAccuracy: true }
+            { timeout: 8000, enableHighAccuracy: true }
         );
     } else {
-        if (locationTextEl) locationTextEl.textContent = "Geolocation is not supported by your browser.";
+        fetchLiveStations(6.9167, 3.9167);
     }
 
 
     // ==========================================
-    // 4. VIEW HISTORY MODAL
+    // 5. VIEW HISTORY MODAL
     // ==========================================
     const viewHistoryBtn = document.getElementById('view-history-btn');
     const historyModal = document.getElementById('history-modal');
@@ -437,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 5. PROFILE MODAL FUNCTIONALITY
+    // 6. PROFILE MODAL FUNCTIONALITY
     // ==========================================
     const profileBtn = document.getElementById("profile-nav-btn");
     const profileModal = document.getElementById("profile-modal");
@@ -480,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 6. SCROLL REVEAL & ADD MONEY
+    // 7. SCROLL REVEAL & ADD MONEY
     // ==========================================
     const observerOptions = { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0.15 };
     const revealObserver = new IntersectionObserver((entries) => {
@@ -505,6 +591,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('fuelless_wallet_balance', accountData.balance);
                     localStorage.setItem(storageKey, JSON.stringify(accountData));
                     slotMachineRollBalance(accountData.balance, 1400);
+
+                    // Push notification for wallet funding
+                    let currentNotifs = JSON.parse(localStorage.getItem("fuelless_notifications") || "[]");
+                    currentNotifs.unshift({
+                        id: Date.now(),
+                        title: "Wallet Funded 💳",
+                        desc: `Successfully added ₦${addedValue.toLocaleString()} to your fuel wallet.`,
+                        time: "Just now",
+                        read: false
+                    });
+                    localStorage.setItem("fuelless_notifications", JSON.stringify(currentNotifs));
+                    updateNotificationUI();
                 } else {
                     alert("Please enter a valid monetary amount.");
                 }
