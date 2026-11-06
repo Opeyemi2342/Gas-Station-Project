@@ -330,8 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentActiveList = [...masterStationsDatabase];
 
     const gridContainer = document.getElementById('stations-grid');
-    const landmarkInput = document.getElementById('landmark-search-input');
-    const searchLandmarkBtn = document.getElementById('search-landmark-btn');
+    const searchInput = document.getElementById('search-input');
     const locationBtn = document.getElementById('location-btn');
     const locationText = document.getElementById('location-text');
     const stationHeading = document.getElementById('station-heading');
@@ -659,10 +658,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 8. LANDMARK OR TOWN SEARCH IN NIGERIA
     // ==========================================
     async function handleLandmarkSearch() {
-        const query = landmarkInput.value.trim();
+        const query = searchInput.value.trim();
         if (!query) return;
 
-        if (stationHeading) stationHeading.textContent = `Searching stations around "${query}"...`;
+        if (stationHeading) stationHeading.textContent = `Stations around "${query}"`;
 
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + " Nigeria")}`);
@@ -691,9 +690,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (searchLandmarkBtn && landmarkInput) {
-        searchLandmarkBtn.addEventListener('click', handleLandmarkSearch);
-        landmarkInput.addEventListener('keypress', (e) => {
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleLandmarkSearch();
         });
     }
