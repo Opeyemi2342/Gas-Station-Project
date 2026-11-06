@@ -1,5 +1,63 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const profileBtn = document.getElementById("profile-nav-btn");
+    const profileModal = document.getElementById("profile-modal");
+    const closeProfileModal = document.getElementById("close-profile-modal");
+    const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
+    const clearDataBtn = document.getElementById("clear-data-btn");
 
+    if (profileBtn && profileModal) {
+        profileBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const currentWallet =
+                localStorage.getItem("fuelless_wallet_balance") || "0.00";
+            const currentTotalFuel =
+                localStorage.getItem("fuelless_total_litres") || "0";
+
+            const walletDisplay =
+                document.getElementById("profile-wallet-display");
+            const fuelDisplay =
+                document.getElementById("profile-fuel-display");
+
+            if (walletDisplay) {
+                walletDisplay.textContent =
+                    "₦" + Number(currentWallet).toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+            }
+
+            if (fuelDisplay) {
+                fuelDisplay.textContent = currentTotalFuel + " L";
+            }
+
+            profileModal.classList.remove("hidden");
+            profileModal.classList.add("flex");
+        });
+    }
+
+    function closeProfile() {
+        if (!profileModal) return;
+        profileModal.classList.add("hidden");
+        profileModal.classList.remove("flex");
+    }
+
+    if (closeProfileModal) {
+        closeProfileModal.addEventListener("click", closeProfile);
+    }
+
+    if (closeProfileModalBtn) {
+        closeProfileModalBtn.addEventListener("click", closeProfile);
+    }
+
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to reset your local app data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    }
     // ==========================================
     // 0. LOAD USER PROFILE & INITIAL STATE
     // ==========================================
@@ -46,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bellBtn = document.getElementById("bell-btn");
     const notifBadge = document.getElementById("notif-badge");
     
+    // Ensure notification dropdown container exists in DOM or create it dynamically
     let notifDropdown = document.getElementById("notif-dropdown");
     if (!notifDropdown && bellBtn) {
         notifDropdown = document.createElement("div");
@@ -283,6 +342,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const embeddedMap = document.getElementById('embedded-map');
     const openMapBtn = document.getElementById('open-map-btn');
 
+    // Direction Modal Elements
+    const directionModal = document.getElementById('direction-modal');
+    const closeDirectionModal = document.getElementById('close-direction-modal');
+    const directionContent = document.getElementById('direction-content');
+    const openMapsLink = document.getElementById('open-maps-link');
+
     let currentFilter = "all";
 
 
@@ -336,11 +401,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
 
+                    <!-- Full Detailed Address -->
                     <div class="mb-3 text-xs text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex items-start gap-2">
                         <i class="fa-solid fa-location-dot text-red-500 mt-0.5 shrink-0"></i>
                         <span class="leading-relaxed">${station.fullAddress}</span>
                     </div>
 
+                    <!-- Fuel & CNG Availability Tags -->
                     <div class="flex flex-wrap gap-1.5 mb-4">
                         <span class="bg-orange-50 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded border border-orange-100 flex items-center gap-1">
                             <i class="fa-solid fa-gas-pump"></i> PMS Available
@@ -369,13 +436,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="space-y-2">
-                    <!-- Direct Google Maps Navigation Link Button -->
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=${station.lat || 6.9167},${station.lon || 3.9167}&travelmode=driving" 
-                       target="_blank" 
-                       class="get-directions-btn w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
+                    <!-- Google Maps Directions Tag -->
+                    <button class="get-directions-btn w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition"
+                        data-name="${station.name}" data-address="${station.fullAddress}" data-lat="${station.lat || 6.9167}" data-lon="${station.lon || 3.9167}">
                         <i class="fa-solid fa-route text-emerald-700"></i>
                         <span>Ask for direction from your location</span>
-                    </a>
+                    </button>
 
                     <button class="buy-station-btn w-full bg-[#145337] text-white py-2.5 rounded-xl text-xs font-semibold hover:bg-[#09482d] flex items-center justify-center space-x-1.5 shadow-sm transition"
                         data-station="${station.name}" data-price="${station.price}" data-address="${station.fullAddress}">
@@ -404,11 +470,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = './buyfuelpage.html';
             });
         });
+
+        // Bind Google Maps Direction Button Event
+        document.querySelectorAll('.get-directions-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const name = btn.getAttribute('data-name');
+                const address = btn.getAttribute('data-address');
+                const lat = btn.getAttribute('data-lat');
+                const lon = btn.getAttribute('data-lon');
+
+                openDirectionModal(name, address, lat, lon);
+            });
+        });
     }
 
 
     // ==========================================
-    // 5. FETCH LIVE STATIONS ANYWHERE IN NIGERIA
+    // 5. GOOGLE MAPS ROUTING MODAL HANDLER
+    // ==========================================
+    function openDirectionModal(name, address, lat, lon) {
+        if (!directionModal) return;
+        directionContent.innerHTML = `
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-2">
+                <p><strong>Destination:</strong> ${name}</p>
+                <p><strong>Full Address:</strong> ${address}</p>
+                <p class="text-emerald-800 font-semibold mt-2">🗺️ Direct GPS route will be calculated from your current location on Google Maps.</p>
+            </div>
+        `;
+        openMapsLink.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+        directionModal.classList.remove("hidden");
+        directionModal.classList.add("flex");
+    }
+
+    closeDirectionModal?.addEventListener("click", () => {
+        directionModal.classList.add("hidden");
+        directionModal.classList.remove("flex");
+    });
+
+
+    // ==========================================
+    // 6. FETCH LIVE STATIONS ANYWHERE IN NIGERIA
     // ==========================================
     async function fetchRealTimeStations(lat, lng, areaName = "your location") {
         if (locationText) locationText.textContent = "Scanning area...";
@@ -503,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 6. AUTO-DETECT GPS (AGO-IWOYE / NIGERIA)
+    // 7. AUTO-DETECT GPS (AGO-IWOYE / NIGERIA)
     // ==========================================
     function autoDetectUserLocation() {
         if (navigator.geolocation) {
@@ -534,6 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     await fetchRealTimeStations(lat, lng, locationName);
                 },
                 (error) => {
+                    // Default fallback to Ago-Iwoye, Ogun State coordinates
                     fetchRealTimeStations(6.9167, 3.9167, "Ago-Iwoye");
                 },
                 { timeout: 8000 }
@@ -553,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 7. LANDMARK OR TOWN SEARCH IN NIGERIA
+    // 8. LANDMARK OR TOWN SEARCH IN NIGERIA
     // ==========================================
     async function handleLandmarkSearch() {
         const query = landmarkInput.value.trim();
@@ -597,7 +700,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 8. FILTER CHIPS (Including CNG tab)
+    // 9. FILTER CHIPS (Including CNG tab)
     // ==========================================
     const filterChips = document.querySelectorAll('.filter-chip');
     filterChips.forEach(chip => {
@@ -629,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 9. GOOGLE MAP VIEW TOGGLE
+    // 10. GOOGLE MAP VIEW TOGGLE
     // ==========================================
     if (openMapBtn && mapContainer) {
         openMapBtn.addEventListener('click', () => {
