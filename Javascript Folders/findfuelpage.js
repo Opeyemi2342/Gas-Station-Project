@@ -5,34 +5,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
     const clearDataBtn = document.getElementById("clear-data-btn");
 
+    function openProfileModal() {
+        if (!profileModal) return;
+
+        const currentWallet =
+            localStorage.getItem("fuelless_wallet_balance") || "0.00";
+        const currentTotalFuel =
+            localStorage.getItem("fuelless_total_litres") || "0";
+
+        const walletDisplay =
+            document.getElementById("profile-wallet-display");
+        const fuelDisplay =
+            document.getElementById("profile-fuel-display");
+
+        if (walletDisplay) {
+            walletDisplay.textContent =
+                "₦" + Number(currentWallet).toLocaleString("en-NG", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+        }
+
+        if (fuelDisplay) {
+            fuelDisplay.textContent = currentTotalFuel + " L";
+        }
+
+        profileModal.classList.remove("hidden");
+        profileModal.classList.add("flex");
+    }
+
     if (profileBtn && profileModal) {
         profileBtn.addEventListener("click", (e) => {
             e.preventDefault();
-
-            const currentWallet =
-                localStorage.getItem("fuelless_wallet_balance") || "0.00";
-            const currentTotalFuel =
-                localStorage.getItem("fuelless_total_litres") || "0";
-
-            const walletDisplay =
-                document.getElementById("profile-wallet-display");
-            const fuelDisplay =
-                document.getElementById("profile-fuel-display");
-
-            if (walletDisplay) {
-                walletDisplay.textContent =
-                    "₦" + Number(currentWallet).toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-            }
-
-            if (fuelDisplay) {
-                fuelDisplay.textContent = currentTotalFuel + " L";
-            }
-
-            profileModal.classList.remove("hidden");
-            profileModal.classList.add("flex");
+            openProfileModal();
         });
     }
 
@@ -104,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const bellBtn = document.getElementById("bell-btn");
     const notifBadge = document.getElementById("notif-badge");
     
-    // Ensure notification dropdown container exists in DOM or create it dynamically
     let notifDropdown = document.getElementById("notif-dropdown");
     if (!notifDropdown && bellBtn) {
         notifDropdown = document.createElement("div");
@@ -341,7 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const embeddedMap = document.getElementById('embedded-map');
     const openMapBtn = document.getElementById('open-map-btn');
 
-    // Direction Modal Elements
     const directionModal = document.getElementById('direction-modal');
     const closeDirectionModal = document.getElementById('close-direction-modal');
     const directionContent = document.getElementById('direction-content');
@@ -400,13 +403,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
 
-                    <!-- Full Detailed Address -->
                     <div class="mb-3 text-xs text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex items-start gap-2">
                         <i class="fa-solid fa-location-dot text-red-500 mt-0.5 shrink-0"></i>
                         <span class="leading-relaxed">${station.fullAddress}</span>
                     </div>
 
-                    <!-- Fuel & CNG Availability Tags -->
                     <div class="flex flex-wrap gap-1.5 mb-4">
                         <span class="bg-orange-50 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded border border-orange-100 flex items-center gap-1">
                             <i class="fa-solid fa-gas-pump"></i> PMS Available
@@ -435,7 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="space-y-2">
-                    <!-- Google Maps Directions Tag -->
                     <button class="get-directions-btn w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition"
                         data-name="${station.name}" data-address="${station.fullAddress}" data-lat="${station.lat || 6.9167}" data-lon="${station.lon || 3.9167}">
                         <i class="fa-solid fa-route text-emerald-700"></i>
@@ -455,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
         gridContainer.innerHTML = '';
         gridContainer.appendChild(fragment);
 
-        // Bind Buy Button Event
         document.querySelectorAll('.buy-station-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -470,7 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Bind Google Maps Direction Button Event
         document.querySelectorAll('.get-directions-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -634,8 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     await fetchRealTimeStations(lat, lng, locationName);
                 },
-                (error) => {
-                    // Default fallback to Ago-Iwoye, Ogun State coordinates
+                () => {
                     fetchRealTimeStations(6.9167, 3.9167, "Ago-Iwoye");
                 },
                 { timeout: 8000 }
@@ -738,6 +735,173 @@ document.addEventListener('DOMContentLoaded', () => {
             embeddedMap.classList.remove('hidden');
             mapContainer.classList.remove('h-48');
             mapContainer.classList.add('h-96');
+        });
+    }
+
+
+    // ==========================================
+    // 11. MENISCUS SLIDING & DRAGGABLE NAVIGATION
+    // ==========================================
+    const nav = document.getElementById("meniscus-nav");
+    const bead = document.getElementById("meniscus-bead");
+    const cutout = document.getElementById("meniscus-cutout");
+    const beadIcon = document.getElementById("meniscus-bead-icon");
+    const mainContent = document.getElementById("main-content");
+
+    if (nav && bead && cutout && beadIcon) {
+        const items = Array.from(nav.querySelectorAll(".meniscus-item"));
+        let activeIndex = 1; // Stations tab on Find Fuel page
+        let isDragging = false;
+
+        function getCenterXForIndex(index) {
+            const item = items[index];
+            if (!item) return 0;
+            const navRect = nav.getBoundingClientRect();
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.left - navRect.left + itemRect.width / 2;
+            return itemCenter - 38;
+        }
+
+        function setBeadPosition(x, scale = 1) {
+            const navRect = nav.getBoundingClientRect();
+            const minX = 4;
+            const maxX = Math.max(minX, navRect.width - 80);
+            const clampedX = Math.max(minX, Math.min(maxX, x));
+
+            nav.style.setProperty("--bead-x", `${clampedX}px`);
+            nav.style.setProperty("--bead-scale", `${scale}`);
+        }
+
+        function findNearestIndex(x) {
+            let bestIdx = 0;
+            let bestDist = Infinity;
+            items.forEach((_, idx) => {
+                const dist = Math.abs(getCenterXForIndex(idx) - x);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestIdx = idx;
+                }
+            });
+            return bestIdx;
+        }
+
+        function syncColorForPosition(x) {
+            const nearest = items[findNearestIndex(x)];
+            if (!nearest) return;
+            const color = nearest.dataset.color || "#38bdf8";
+            const glow = nearest.dataset.glow || "rgba(56, 189, 248, 0.55)";
+            const iconClass = nearest.dataset.icon || "fa-gas-pump";
+
+            nav.style.setProperty("--bead-color", color);
+            nav.style.setProperty("--bead-glow", glow);
+            beadIcon.className = `fa-solid ${iconClass} text-base`;
+        }
+
+        function navigateSmoothly(href) {
+            if (!href || href === "#") return;
+            if (mainContent) mainContent.classList.add("page-transition-out");
+            setTimeout(() => {
+                window.location.href = href;
+            }, 180);
+        }
+
+        function selectTab(index, { navigate = false } = {}) {
+            activeIndex = Math.max(0, Math.min(items.length - 1, index));
+            const targetItem = items[activeIndex];
+            if (!targetItem) return;
+
+            items.forEach((el, idx) => {
+                el.classList.toggle("is-active", idx === activeIndex);
+            });
+
+            const iconClass = targetItem.dataset.icon || "fa-gas-pump";
+            beadIcon.className = `fa-solid ${iconClass} text-base`;
+
+            const color = targetItem.dataset.color || "#38bdf8";
+            const glow = targetItem.dataset.glow || "rgba(56, 189, 248, 0.55)";
+            nav.style.setProperty("--bead-color", color);
+            nav.style.setProperty("--bead-glow", glow);
+
+            setBeadPosition(getCenterXForIndex(activeIndex), 1);
+
+            const href = targetItem.getAttribute("href");
+            if (!href || href === "#") {
+                if (targetItem.id === "profile-nav-btn") {
+                    openProfileModal();
+                }
+                return;
+            }
+
+            if (navigate) {
+                navigateSmoothly(href);
+            }
+        }
+
+        bead.classList.add("dragging");
+        cutout.classList.add("dragging");
+        selectTab(1, { navigate: false });
+        requestAnimationFrame(() => {
+            bead.classList.remove("dragging");
+            cutout.classList.remove("dragging");
+        });
+
+        items.forEach((item, idx) => {
+            item.addEventListener("click", (e) => {
+                const href = item.getAttribute("href");
+                if (!href || href === "#") {
+                    e.preventDefault();
+                    selectTab(idx, { navigate: false });
+                    return;
+                }
+                e.preventDefault();
+                selectTab(idx, { navigate: true });
+            });
+        });
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const navRect = nav.getBoundingClientRect();
+            const currentX = e.clientX - navRect.left - 38;
+            setBeadPosition(currentX, 1.12);
+            syncColorForPosition(currentX);
+        }
+
+        function onPointerUp(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            bead.classList.remove("dragging");
+            cutout.classList.remove("dragging");
+            window.removeEventListener("pointermove", onPointerMove);
+            window.removeEventListener("pointerup", onPointerUp);
+
+            const navRect = nav.getBoundingClientRect();
+            const dropX = e.clientX - navRect.left - 38;
+            const nearestIdx = findNearestIndex(dropX);
+            const changedTab = nearestIdx !== activeIndex;
+            selectTab(nearestIdx, { navigate: changedTab });
+        }
+
+        bead.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            isDragging = true;
+            bead.classList.add("dragging");
+            cutout.classList.add("dragging");
+            setBeadPosition(getCenterXForIndex(activeIndex), 1.12);
+            window.addEventListener("pointermove", onPointerMove);
+            window.addEventListener("pointerup", onPointerUp);
+        });
+
+        window.addEventListener("resize", () => {
+            setBeadPosition(getCenterXForIndex(activeIndex), 1);
+        });
+
+        document.querySelectorAll("[data-nav-link]").forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const href = link.getAttribute("href");
+                if (!href || href === "#") return;
+                e.preventDefault();
+                navigateSmoothly(href);
+            });
         });
     }
 

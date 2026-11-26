@@ -9,34 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
     const clearDataBtn = document.getElementById("clear-data-btn");
 
+    function openProfileModal() {
+        if (!profileModal) return;
+
+        const currentWallet =
+            localStorage.getItem("fuelless_wallet_balance") || "0.00";
+        const currentTotalFuel =
+            localStorage.getItem("fuelless_total_litres") || "0";
+
+        const walletDisplay =
+            document.getElementById("profile-wallet-display");
+        const fuelDisplay =
+            document.getElementById("profile-fuel-display");
+
+        if (walletDisplay) {
+            walletDisplay.textContent =
+                "₦" + Number(currentWallet).toLocaleString("en-NG", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+        }
+
+        if (fuelDisplay) {
+            fuelDisplay.textContent = currentTotalFuel + " L";
+        }
+
+        profileModal.classList.remove("hidden");
+        profileModal.classList.add("flex");
+    }
+
     if (profileBtn && profileModal) {
         profileBtn.addEventListener("click", (e) => {
             e.preventDefault();
-
-            const currentWallet =
-                localStorage.getItem("fuelless_wallet_balance") || "0.00";
-            const currentTotalFuel =
-                localStorage.getItem("fuelless_total_litres") || "0";
-
-            const walletDisplay =
-                document.getElementById("profile-wallet-display");
-            const fuelDisplay =
-                document.getElementById("profile-fuel-display");
-
-            if (walletDisplay) {
-                walletDisplay.textContent =
-                    "₦" + Number(currentWallet).toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-            }
-
-            if (fuelDisplay) {
-                fuelDisplay.textContent = currentTotalFuel + " L";
-            }
-
-            profileModal.classList.remove("hidden");
-            profileModal.classList.add("flex");
+            openProfileModal();
         });
     }
 
@@ -339,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Calculate everything before saving the purchase.
             const purchasedAt = Date.now();
             const expiresAt = purchasedAt + (24 * 60 * 60 * 1000);
 
@@ -355,17 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 litres: purchasedLitres.toFixed(1),
                 totalPaid: finalTotal,
                 passCode: randomCode,
-
-                // Exact timestamps used by the live countdown.
                 purchasedAt: purchasedAt,
                 expiresAt: expiresAt,
-
-                // Keep the readable purchase date for compatibility.
                 date: new Date(purchasedAt).toLocaleString("en-NG", {
                     dateStyle: "medium",
                     timeStyle: "short"
                 }),
-
                 status: "Completed"
             };
 
@@ -378,7 +377,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error("Purchase records are invalid.");
                 }
 
-                // Save the purchase before deducting the wallet.
                 existingPurchases.unshift(purchaseRecord);
 
                 localStorage.setItem(
@@ -423,7 +421,164 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 9. INITIALIZE
+    // 9. MENISCUS SLIDING & DRAGGABLE NAVIGATION
+    // ==========================================
+    const nav = document.getElementById("meniscus-nav");
+    const bead = document.getElementById("meniscus-bead");
+    const cutout = document.getElementById("meniscus-cutout");
+    const beadIcon = document.getElementById("meniscus-bead-icon");
+    const mainContent = document.getElementById("main-content");
+
+    if (nav && bead && cutout && beadIcon) {
+        const items = Array.from(nav.querySelectorAll(".meniscus-item"));
+        let activeIndex = 2; // Buy tab on Buy Fuel page
+        let isDragging = false;
+
+        function getCenterXForIndex(index) {
+            const item = items[index];
+            if (!item) return 0;
+            const navRect = nav.getBoundingClientRect();
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.left - navRect.left + itemRect.width / 2;
+            return itemCenter - 38;
+        }
+
+        function setBeadPosition(x, scale = 1) {
+            const navRect = nav.getBoundingClientRect();
+            const minX = 4;
+            const maxX = Math.max(minX, navRect.width - 80);
+            const clampedX = Math.max(minX, Math.min(maxX, x));
+
+            nav.style.setProperty("--bead-x", `${clampedX}px`);
+            nav.style.setProperty("--bead-scale", `${scale}`);
+        }
+
+        function findNearestIndex(x) {
+            let bestIdx = 0;
+            let bestDist = Infinity;
+            items.forEach((_, idx) => {
+                const dist = Math.abs(getCenterXForIndex(idx) - x);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestIdx = idx;
+                }
+            });
+            return bestIdx;
+        }
+
+        function syncColorForPosition(x) {
+            const nearest = items[findNearestIndex(x)];
+            if (!nearest) return;
+            const color = nearest.dataset.color || "#facc15";
+            const glow = nearest.dataset.glow || "rgba(250, 204, 21, 0.6)";
+            const iconClass = nearest.dataset.icon || "fa-bolt";
+
+            nav.style.setProperty("--bead-color", color);
+            nav.style.setProperty("--bead-glow", glow);
+            beadIcon.className = `fa-solid ${iconClass} text-base`;
+        }
+
+        function navigateSmoothly(href) {
+            if (!href || href === "#") return;
+            if (mainContent) mainContent.classList.add("page-transition-out");
+            setTimeout(() => {
+                window.location.href = href;
+            }, 180);
+        }
+
+        function selectTab(index, { navigate = false } = {}) {
+            activeIndex = Math.max(0, Math.min(items.length - 1, index));
+            const targetItem = items[activeIndex];
+            if (!targetItem) return;
+
+            items.forEach((el, idx) => {
+                el.classList.toggle("is-active", idx === activeIndex);
+            });
+
+            const iconClass = targetItem.dataset.icon || "fa-bolt";
+            beadIcon.className = `fa-solid ${iconClass} text-base`;
+
+            const color = targetItem.dataset.color || "#facc15";
+            const glow = targetItem.dataset.glow || "rgba(250, 204, 21, 0.6)";
+            nav.style.setProperty("--bead-color", color);
+            nav.style.setProperty("--bead-glow", glow);
+
+            setBeadPosition(getCenterXForIndex(activeIndex), 1);
+
+            const href = targetItem.getAttribute("href");
+            if (!href || href === "#") {
+                if (targetItem.id === "profile-nav-btn") {
+                    openProfileModal();
+                }
+                return;
+            }
+
+            if (navigate) {
+                navigateSmoothly(href);
+            }
+        }
+
+        bead.classList.add("dragging");
+        cutout.classList.add("dragging");
+        selectTab(2, { navigate: false });
+        requestAnimationFrame(() => {
+            bead.classList.remove("dragging");
+            cutout.classList.remove("dragging");
+        });
+
+        items.forEach((item, idx) => {
+            item.addEventListener("click", (e) => {
+                const href = item.getAttribute("href");
+                if (!href || href === "#") {
+                    e.preventDefault();
+                    selectTab(idx, { navigate: false });
+                    return;
+                }
+                e.preventDefault();
+                selectTab(idx, { navigate: true });
+            });
+        });
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const navRect = nav.getBoundingClientRect();
+            const currentX = e.clientX - navRect.left - 38;
+            setBeadPosition(currentX, 1.12);
+            syncColorForPosition(currentX);
+        }
+
+        function onPointerUp(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            bead.classList.remove("dragging");
+            cutout.classList.remove("dragging");
+            window.removeEventListener("pointermove", onPointerMove);
+            window.removeEventListener("pointerup", onPointerUp);
+
+            const navRect = nav.getBoundingClientRect();
+            const dropX = e.clientX - navRect.left - 38;
+            const nearestIdx = findNearestIndex(dropX);
+            const changedTab = nearestIdx !== activeIndex;
+            selectTab(nearestIdx, { navigate: changedTab });
+        }
+
+        bead.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            isDragging = true;
+            bead.classList.add("dragging");
+            cutout.classList.add("dragging");
+            setBeadPosition(getCenterXForIndex(activeIndex), 1.12);
+            window.addEventListener("pointermove", onPointerMove);
+            window.addEventListener("pointerup", onPointerUp);
+        });
+
+        window.addEventListener("resize", () => {
+            setBeadPosition(getCenterXForIndex(activeIndex), 1);
+        });
+    }
+
+    // ==========================================
+    // 10. INITIALIZE
     // ==========================================
     renderQuickButtons();
     updateCalculations();

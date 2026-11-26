@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentUserData) {
         const user = JSON.parse(currentUserData);
         userEmail = user.email ? user.email.toLowerCase() : "default_user";
-        
+
         const welcomeHeading = document.querySelector('header p.uppercase');
         const sidebarUserName = document.querySelector('aside h5');
         const sidebarUserEmail = document.querySelector('aside p.text-gray-400');
@@ -54,16 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const storedPurchases = JSON.parse(localStorage.getItem('fuelless_purchases')) || [];
-    
+
     let computedTotalLitres = 0;
     storedPurchases.forEach(p => {
         computedTotalLitres += parseFloat(p.litres) || 0;
     });
-    
+
     localStorage.setItem('fuelless_total_litres', computedTotalLitres.toFixed(1));
 
     const totalPurchasesCount = storedPurchases.length;
-    const computedTimeSavedMins = totalPurchasesCount * 30; // ~30 mins saved per successful queue-bypassed purchase
+    const computedTimeSavedMins = totalPurchasesCount * 30;
 
 
     // ==========================================
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const latestPurchase = storedPurchases[0];
         const notifIdTag = `purchase_${latestPurchase.passCode}`;
         const alreadyLogged = notifications.some(n => n.tag === notifIdTag);
-        
+
         if (!alreadyLogged) {
             notifications.unshift({
                 id: Date.now(),
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. RENDER ACCOUNT STATS & CARDS
     // ==========================================
     const walletBalanceEl = document.getElementById('wallet-balance');
-    
+
     function slotMachineRollBalance(targetVal, duration = 1000) {
         if (!walletBalanceEl) return;
         if (targetVal === 0) {
@@ -324,14 +324,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. DISTANCE CALCULATOR HELPER
     // ==========================================
     function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
+        const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = 
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
 
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const rawName = el.tags.name || el.tags.brand || el.tags.operator || `Fuel Station #${index + 1}`;
                         let stationName = rawName;
                         let matchedBrand = brandNames.find(b => rawName.toLowerCase().includes(b.toLowerCase()));
-                        
+
                         if (matchedBrand && !rawName.toLowerCase().includes("filling station")) {
                             stationName = `${matchedBrand} Filling Station`;
                         }
@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stations.forEach(station => {
             const card = document.createElement('div');
             card.className = "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all";
-            
+
             card.innerHTML = `
                 <div>
                     <div class="flex items-center justify-between mb-3">
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
             (position) => {
                 fetchLiveStations(position.coords.latitude, position.coords.longitude);
             },
-            (err) => {
+            () => {
                 fetchLiveStations(6.9167, 3.9167);
             },
             { timeout: 8000, enableHighAccuracy: true }
@@ -577,17 +577,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeProfileModalBtn = document.getElementById("close-profile-modal-btn");
     const clearDataBtn = document.getElementById("clear-data-btn");
 
+    function openProfileModal() {
+        if (!profileModal) return;
+        const currentBalance = localStorage.getItem("fuelless_wallet_balance") || "0.00";
+        const currentTotalFuel = localStorage.getItem("fuelless_total_litres") || "0";
+
+        const walletDisp = document.getElementById("profile-wallet-display");
+        const fuelDisp = document.getElementById("profile-fuel-display");
+        if (walletDisp) walletDisp.textContent = "₦" + parseFloat(currentBalance).toLocaleString();
+        if (fuelDisp) fuelDisp.textContent = currentTotalFuel + " L";
+
+        profileModal.classList.remove("hidden");
+        profileModal.classList.add("flex");
+    }
+
     if (profileBtn && profileModal) {
         profileBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            const currentBalance = localStorage.getItem("fuelless_wallet_balance") || "0.00";
-            const currentTotalFuel = localStorage.getItem("fuelless_total_litres") || "0";
-
-            document.getElementById("profile-wallet-display").textContent = "₦" + parseFloat(currentBalance).toLocaleString();
-            document.getElementById("profile-fuel-display").textContent = currentTotalFuel + " L";
-            
-            profileModal.classList.remove("hidden");
-            profileModal.classList.add("flex");
+            openProfileModal();
         });
     }
 
@@ -652,6 +659,174 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert("Please enter a valid monetary amount.");
                 }
             }
+        });
+    }
+
+
+    // ==========================================
+    // 9. MENISCUS SLIDING & DRAGGABLE NAVIGATION
+    // ==========================================
+    const nav = document.getElementById("meniscus-nav");
+    const bead = document.getElementById("meniscus-bead");
+    const cutout = document.getElementById("meniscus-cutout");
+    const beadIcon = document.getElementById("meniscus-bead-icon");
+    const mainContent = document.getElementById("main-content");
+
+    if (nav && bead && cutout && beadIcon) {
+        const items = Array.from(nav.querySelectorAll(".meniscus-item"));
+        let activeIndex = 0;
+        let isDragging = false;
+
+        function getCenterXForIndex(index) {
+            const item = items[index];
+            if (!item) return 0;
+            const navRect = nav.getBoundingClientRect();
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.left - navRect.left + itemRect.width / 2;
+            return itemCenter - 38;
+        }
+
+        function setBeadPosition(x, scale = 1) {
+            const navRect = nav.getBoundingClientRect();
+            const minX = 4;
+            const maxX = Math.max(minX, navRect.width - 80);
+            const clampedX = Math.max(minX, Math.min(maxX, x));
+
+            nav.style.setProperty("--bead-x", `${clampedX}px`);
+            nav.style.setProperty("--bead-scale", `${scale}`);
+        }
+
+        function findNearestIndex(x) {
+            let bestIdx = 0;
+            let bestDist = Infinity;
+            items.forEach((_, idx) => {
+                const dist = Math.abs(getCenterXForIndex(idx) - x);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestIdx = idx;
+                }
+            });
+            return bestIdx;
+        }
+
+        function syncColorForPosition(x) {
+            const nearest = items[findNearestIndex(x)];
+            if (!nearest) return;
+            const color = nearest.dataset.color || "#a3e635";
+            const glow = nearest.dataset.glow || "rgba(163, 230, 53, 0.55)";
+            const iconClass = nearest.dataset.icon || "fa-house";
+
+            nav.style.setProperty("--bead-color", color);
+            nav.style.setProperty("--bead-glow", glow);
+            beadIcon.className = `fa-solid ${iconClass} text-base`;
+        }
+
+        function navigateSmoothly(href) {
+            if (!href || href === "#") return;
+            if (mainContent) mainContent.classList.add("page-transition-out");
+            setTimeout(() => {
+                window.location.href = href;
+            }, 180);
+        }
+
+        function selectTab(index, { navigate = false } = {}) {
+            activeIndex = Math.max(0, Math.min(items.length - 1, index));
+            const targetItem = items[activeIndex];
+            if (!targetItem) return;
+
+            items.forEach((el, idx) => {
+                el.classList.toggle("is-active", idx === activeIndex);
+            });
+
+            const iconClass = targetItem.dataset.icon || "fa-house";
+            beadIcon.className = `fa-solid ${iconClass} text-base`;
+
+            const color = targetItem.dataset.color || "#a3e635";
+            const glow = targetItem.dataset.glow || "rgba(163, 230, 53, 0.55)";
+            nav.style.setProperty("--bead-color", color);
+            nav.style.setProperty("--bead-glow", glow);
+
+            setBeadPosition(getCenterXForIndex(activeIndex), 1);
+
+            const href = targetItem.getAttribute("href");
+            if (!href || href === "#") {
+                if (targetItem.id === "profile-nav-btn") {
+                    openProfileModal();
+                }
+                return;
+            }
+
+            if (navigate) {
+                navigateSmoothly(href);
+            }
+        }
+
+        // Set initial bead state cleanly without sliding from left
+        bead.classList.add("dragging");
+        cutout.classList.add("dragging");
+        selectTab(0, { navigate: false });
+        requestAnimationFrame(() => {
+            bead.classList.remove("dragging");
+            cutout.classList.remove("dragging");
+        });
+
+        items.forEach((item, idx) => {
+            item.addEventListener("click", (e) => {
+                const href = item.getAttribute("href");
+                if (!href || href === "#") {
+                    e.preventDefault();
+                    selectTab(idx, { navigate: false });
+                    return;
+                }
+                e.preventDefault();
+                selectTab(idx, { navigate: true });
+            });
+        });
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const navRect = nav.getBoundingClientRect();
+            const currentX = e.clientX - navRect.left - 38;
+            setBeadPosition(currentX, 1.12);
+            syncColorForPosition(currentX);
+        }
+
+        function onPointerUp(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            bead.classList.remove("dragging");
+            cutout.classList.remove("dragging");
+            window.removeEventListener("pointermove", onPointerMove);
+            window.removeEventListener("pointerup", onPointerUp);
+
+            const navRect = nav.getBoundingClientRect();
+            const dropX = e.clientX - navRect.left - 38;
+            const nearestIdx = findNearestIndex(dropX);
+            const changedTab = nearestIdx !== activeIndex;
+            selectTab(nearestIdx, { navigate: changedTab });
+        }
+
+        bead.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            isDragging = true;
+            bead.classList.add("dragging");
+            cutout.classList.add("dragging");
+            setBeadPosition(getCenterXForIndex(activeIndex), 1.12);
+            window.addEventListener("pointermove", onPointerMove);
+            window.addEventListener("pointerup", onPointerUp);
+        });
+
+        window.addEventListener("resize", () => {
+            setBeadPosition(getCenterXForIndex(activeIndex), 1);
+        });
+
+        document.querySelectorAll("[data-nav-link]").forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const href = link.getAttribute("href");
+                if (!href || href === "#") return;
+                e.preventDefault();
+                navigateSmoothly(href);
+            });
         });
     }
 
